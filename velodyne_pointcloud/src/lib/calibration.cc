@@ -143,7 +143,8 @@ void operator>>(const YAML::Node & node, Calibration & calibration)
     std::pair<int, LaserCorrection> correction;
     lasers[i] >> correction;
     const int index = correction.first;
-    if (index >= calibration.laser_corrections.size()) {
+    const auto size = static_cast<int>(calibration.laser_corrections.size());
+    if (index >= size) {
       calibration.laser_corrections.resize(index + 1);
     }
     calibration.laser_corrections[index] = (correction.second);

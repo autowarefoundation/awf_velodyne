@@ -102,8 +102,8 @@ pcl::PointCloud<velodyne_pointcloud::PointXYZIRADT>::Ptr extractInvalidNearPoint
   cv::Mat image =
     cv::Mat::zeros(cv::Size(input_pointcloud->size() / num_lasers, num_lasers), CV_8UC1);
 
-  for (size_t x = 0; x < image.cols; ++x) {
-    for (size_t y = 0; y < image.rows; ++y) {
+  for (int x = 0; x < image.cols; ++x) {
+    for (int y = 0; y < image.rows; ++y) {
       tmp_p = input_pointcloud->points.at(ring_id_array.at(y) + x * image.rows);
       if (
         tmp_p.distance == 0 && tmp_p.intensity <= 100 &&
@@ -128,7 +128,7 @@ pcl::PointCloud<velodyne_pointcloud::PointXYZIRADT>::Ptr extractInvalidNearPoint
   int label_n = cv::connectedComponentsWithStats(image, label_image, stats, centroids, 8);
 
   std::vector<int> stat_area;
-  for (size_t label = 0; label < label_n; ++label) {
+  for (int label = 0; label < label_n; ++label) {
     int * param = stats.ptr<int>(label);
     stat_area.push_back(param[cv::ConnectedComponentsTypes::CC_STAT_AREA]);
     // std::cerr << param[cv::ConnectedComponentsTypes::CC_STAT_AREA] << " ";
@@ -139,12 +139,13 @@ pcl::PointCloud<velodyne_pointcloud::PointXYZIRADT>::Ptr extractInvalidNearPoint
     new pcl::PointCloud<velodyne_pointcloud::PointXYZIRADT>);
   output_pointcloud->reserve(input_pointcloud->points.size());
   int label = 0;
-  for (size_t x = 0; x < image.cols; ++x) {
-    for (size_t y = 0; y < image.rows; ++y) {
+  for (int x = 0; x < image.cols; ++x) {
+    for (int y = 0; y < image.rows; ++y) {
       label = label_image.at<int>(y, x);
       tmp_p = input_pointcloud->points.at(ring_id_array.at(y) + x * image.rows);
+      const auto points_size_thresh_int = static_cast<int>(points_size_threshold);
       if (
-        label != 0 && stat_area.at(label) >= points_size_threshold && tmp_p.distance == 0 &&
+        label != 0 && stat_area.at(label) >= points_size_thresh_int && tmp_p.distance == 0 &&
         tmp_p.intensity <= 100 && tmp_p.intensity != invalid_intensity_array[tmp_p.ring]) {
         output_pointcloud->points.push_back(tmp_p);
       }
