@@ -294,7 +294,7 @@ namespace velodyne_driver
     {
       delete pwait_time ;
     }
-    pwait_time = new rclcpp::Duration(1.0/packet_rate);
+    pwait_time = new rclcpp::Duration(rclcpp::Duration::from_seconds(1.0/packet_rate));
   }
   /** @brief Get one velodyne packet. */
   int InputPCAP::getPacket(velodyne_msgs::msg::VelodynePacket *pkt, const double time_offset)

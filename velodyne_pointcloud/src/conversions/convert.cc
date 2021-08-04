@@ -126,7 +126,7 @@ Convert::Convert(const rclcpp::NodeOptions & options)
     config_.min_range, config_.max_range, config_.view_direction, config_.view_width);
 
   std::vector<double> invalid_intensity_double;
-  invalid_intensity_double = this->declare_parameter("invalid_intensity").get<std::vector<double>>();
+  invalid_intensity_double = this->declare_parameter<std::vector<double>>("invalid_intensity");
   // YAML::Node invalid_intensity_yaml = YAML::Load(invalid_intensity);
   invalid_intensity_array_ = std::vector<float>(data_->getNumLasers(), 0);
   for (size_t i = 0; i < invalid_intensity_double.size(); ++i) {
@@ -243,7 +243,7 @@ void Convert::processScan(const velodyne_msgs::msg::VelodyneScan::SharedPtr scan
     double last_point_timestamp = scan_points_xyziradt.pc->points.back().time_stamp;
     double average_timestamp = (first_point_timestamp + last_point_timestamp)/2;
     scan_points_xyziradt.pc->header.stamp =
-      pcl_conversions::toPCL(rclcpp::Time(toChronoNanoSeconds(first_point_timestamp).count()) - rclcpp::Duration(0.0));
+      pcl_conversions::toPCL(rclcpp::Time(toChronoNanoSeconds(first_point_timestamp).count()) - rclcpp::Duration::from_seconds(0.0));
       //pcl_conversions::toPCL(scanMsg->packets[0].stamp - ros::Duration(0.0));
     scan_points_xyziradt.pc->height = 1;
     scan_points_xyziradt.pc->width = scan_points_xyziradt.pc->points.size();
