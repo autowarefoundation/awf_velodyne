@@ -62,6 +62,8 @@ pcl::PointCloud<velodyne_pointcloud::PointXYZIRADT>::Ptr extractInvalidNearPoint
   const pcl::PointCloud<velodyne_pointcloud::PointXYZIRADT>::ConstPtr & input_pointcloud,
   const std::vector<float> & invalid_intensity_array, const size_t num_lasers)
 {
+  (void)num_lasers;
+
   pcl::PointCloud<velodyne_pointcloud::PointXYZIRADT>::Ptr output_pointcloud(
     new pcl::PointCloud<velodyne_pointcloud::PointXYZIRADT>);
   output_pointcloud->reserve(input_pointcloud->points.size());

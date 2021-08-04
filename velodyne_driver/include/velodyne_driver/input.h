@@ -43,7 +43,7 @@
 namespace velodyne_driver
 {
   static uint16_t DATA_PORT_NUMBER = 2368;     // default data port
-  static uint16_t POSITION_PORT_NUMBER = 8308; // default position port
+  // static uint16_t POSITION_PORT_NUMBER = 8308; // default position port
 
   /** @brief Velodyne input base class */
   class Input

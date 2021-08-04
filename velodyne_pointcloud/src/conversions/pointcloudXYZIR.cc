@@ -23,6 +23,10 @@ void PointcloudXYZIR::addPoint(
   const uint16_t & azimuth, const float & distance, const float & intensity,
   const double & time_stamp)
 {
+  (void)azimuth;
+  (void)distance;
+  (void)time_stamp;
+
   velodyne_pointcloud::PointXYZIR point;
   point.x = x;
   point.y = y;

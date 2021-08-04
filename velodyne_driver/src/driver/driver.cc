@@ -26,7 +26,6 @@
 
 namespace velodyne_driver
 {
-  static double prev_frac_packet = 0;
   inline   std::string toBinary(int n)
   {
         std::string r;
