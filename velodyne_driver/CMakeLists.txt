@@ -5,7 +5,7 @@ if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 14)
 endif()
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wall -Wextra -Wpedantic -Wno-unused-parameter)
+  add_compile_options(-Wall -Wextra -Wpedantic -Werror)
 endif()
 
 find_package(ament_cmake_auto REQUIRED)
@@ -28,7 +28,7 @@ ament_auto_add_library(velodyne_driver SHARED
   src/driver/driver.cc
   src/driver/driver.h
   src/driver/nodelet.cc
-  # src/driver/driver.cpp  
+  # src/driver/driver.cpp
 )
 target_link_libraries(velodyne_driver velodyne_input)
 

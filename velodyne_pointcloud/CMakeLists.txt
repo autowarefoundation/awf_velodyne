@@ -6,7 +6,7 @@ if(NOT CMAKE_CXX_STANDARD)
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wall -Wextra -Wpedantic)
+  add_compile_options(-Wall -Wextra -Wpedantic -Werror)
 endif()
 
 set(CMAKE_BUILD_TYPE "Release")
@@ -46,9 +46,9 @@ include_directories(
 ament_auto_add_library(velodyne_rawdata SHARED src/lib/rawdata.cc src/lib/calibration.cc)
 
 ament_auto_add_library(cloud_nodelet SHARED
-  src/conversions/convert.cc 
-  src/conversions/pointcloudXYZIR.cc 
-  src/conversions/pointcloudXYZIRADT.cc 
+  src/conversions/convert.cc
+  src/conversions/pointcloudXYZIR.cc
+  src/conversions/pointcloudXYZIRADT.cc
   src/conversions/func.cc
 )
 target_link_libraries(cloud_nodelet velodyne_rawdata ${YAML_CPP_LIBRARIES} ${OpenCV_LIBS})
