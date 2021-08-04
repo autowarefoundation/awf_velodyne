@@ -243,7 +243,7 @@ void Convert::processScan(const velodyne_msgs::msg::VelodyneScan::SharedPtr scan
     // double last_point_timestamp = scan_points_xyziradt.pc->points.back().time_stamp;
     // double average_timestamp = (first_point_timestamp + last_point_timestamp)/2;
     scan_points_xyziradt.pc->header.stamp =
-      pcl_conversions::toPCL(rclcpp::Time(toChronoNanoSeconds(first_point_timestamp).count()) - rclcpp::Duration::from_seconds(0.0));
+      pcl_conversions::toPCL(rclcpp::Time(toChronoNanoSeconds(first_point_timestamp).count()));
       //pcl_conversions::toPCL(scanMsg->packets[0].stamp - ros::Duration(0.0));
     scan_points_xyziradt.pc->height = 1;
     scan_points_xyziradt.pc->width = scan_points_xyziradt.pc->points.size();
