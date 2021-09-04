@@ -1,17 +1,17 @@
 <!-- -*- mode: XML -*- -->
-<!-- run velodyne_pointcloud/CloudNodelet in a nodelet manager for an VLP-32C -->
+<!-- run velodyne_pointcloud/CloudNodelet in a nodelet manager for an VLS-128 -->
 
 <launch>
 
   <!-- declare arguments with default values -->
   <arg name="launch_driver" default="true"/>
 
-  <arg name="calibration" default="$(find-pkg-share velodyne_pointcloud)/params/VeloView-VLP-32C.yaml"/>
+  <arg name="calibration" default="$(find-pkg-share velodyne_pointcloud)/params/VLS-128_FS1.yaml"/>
   <arg name="device_ip" default="" />
   <arg name="frame_id" default="velodyne" />
   <arg name="manager" default="$(var frame_id)_nodelet_manager" />
-  <arg name="max_range" default="130.0" />
-  <arg name="min_range" default="0.4" />
+  <arg name="max_range" default="250.0" />
+  <arg name="min_range" default="0.5" />
   <arg name="pcap" default="" />
   <arg name="port" default="2368" />
   <arg name="read_fast" default="false" />
@@ -23,14 +23,14 @@
   <arg name="laserscan_ring" default="-1" />
   <arg name="laserscan_resolution" default="0.007" />
   <arg name="num_points_threshold" default="300"/>
-  <arg name="invalid_intensity" default="[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]"/>
+  <arg name="invalid_intensity" default="[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]"/>
 
   <!-- start nodelet manager -->
   <include file="$(find-pkg-share velodyne_driver)/launch/nodelet_manager.launch.xml" if="$(var launch_driver)">
     <arg name="device_ip" value="$(var device_ip)"/>
     <arg name="frame_id" value="$(var frame_id)"/>
     <arg name="manager" value="$(var manager)" />
-    <arg name="model" value="32C"/>
+    <arg name="model" value="VLS128"/>
     <arg name="pcap" value="$(var pcap)"/>
     <arg name="port" value="$(var port)"/>
     <arg name="read_fast" value="$(var read_fast)"/>
