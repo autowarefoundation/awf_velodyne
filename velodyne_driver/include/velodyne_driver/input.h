@@ -114,7 +114,6 @@ namespace velodyne_driver
     void setPacketRate( const double packet_rate ); // necessary for automatic adjustment of rpm
   private:
     rclcpp::Rate packet_rate_;
-    rclcpp::Duration *pwait_time;
     std::string filename_;
     pcap_t *pcap_;
     bpf_program pcap_packet_filter_;
