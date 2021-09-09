@@ -32,7 +32,6 @@ void PointcloudXYZIR::addPoint(
   point.y = y;
   point.z = z;
   point.intensity = intensity;
-  point.return_type = return_type;
   point.ring = ring;
 
   pc->points.push_back(point);

@@ -25,7 +25,6 @@ namespace velodyne_pointcloud
   {
     PCL_ADD_POINT4D;
     float intensity;
-    uint8_t return_type;
     uint16_t ring;
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   } EIGEN_ALIGN16;
