@@ -314,21 +314,46 @@ namespace velodyne_driver
             // Keep the reader from blowing through the file.
             if (read_fast_ == false)
             {
-              if (last_packet_receive_time_ != ros::Time(0) && last_packet_stamp_ != ros::Time(0))
+              if (last_packet_stamp_ != ros::Time(0.0) && last_packet_receive_time_ != ros::Time(0.0))
               {
-                ros::Duration packet_interval = pkt->stamp - last_packet_stamp_;
-                ros::Duration time_elapsed = ros::Time::now() - last_packet_receive_time_;                
-                ros::Duration sleep_time = packet_interval - time_elapsed;               
-                if (packet_interval > time_elapsed)
+                ros::Time current_packet_stamp = pkt->stamp;
+                ros::Duration expected_cycle_time = current_packet_stamp - last_packet_stamp_;
+                ros::Time expected_end = last_packet_receive_time_ + expected_cycle_time;
+                ros::Time actual_end = ros::Time::now();
+
+                // D.etect backward jumps in time
+                if (actual_end < last_packet_receive_time_)
                 {
-                  ros::Time now1 = ros::Time::now();
-                  sleep_time.sleep();
-                  ros::Time now2 = ros::Time::now();
-                  //ROS_WARN("Sleep rate: %f, Actual sleep: %f", sleep_time.toSec(), (now2 - now1).toSec());
+                  expected_end = actual_end + expected_cycle_time;
                 }
+
+                // Calculate the time we'll sleep for.
+                ros::Duration sleep_time = expected_end - actual_end;
+
+                // Make sure to reset our start time.
+                last_packet_receive_time_ = expected_end;
+                last_packet_stamp_ = current_packet_stamp;
+                
+                // If we've taken too much time we won't sleep.
+                if(sleep_time <= ros::Duration(0.0))
+                {
+                  // If we've jumped forward in time, or the loop has taken more than a full extra
+                  // cycle, reset our cycle.
+                  if (actual_end > expected_end + expected_cycle_time)
+                  {
+                    last_packet_receive_time_ = actual_end;
+                  }                
+                }
+                else
+                {
+                  sleep_time.sleep();
+                }
+              }
+              else
+              {
+                last_packet_stamp_ = pkt->stamp;
+                last_packet_receive_time_ = ros::Time::now();
               }              
-              last_packet_receive_time_ = ros::Time::now();
-              last_packet_stamp_ = pkt->stamp;
             }
             return 0;                   // success
           }
