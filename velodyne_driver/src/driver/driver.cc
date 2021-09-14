@@ -349,11 +349,6 @@ bool VelodyneDriverCore::poll(void)
   // its status
   diag_topic_->tick(scan->header.stamp);
 
-  if (dump_file != "" && processed_packets > 1)                  // have PCAP file?
-  {
-    double scan_packet_rate = (double)(processed_packets - 1)/(lastTimeStamp - firstTimeStamp).seconds();
-    input_->setPacketRate(scan_packet_rate);
-  }
   return true;
 }
 

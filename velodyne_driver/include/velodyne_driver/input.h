@@ -62,7 +62,6 @@ namespace velodyne_driver
      */
     virtual int getPacket(velodyne_msgs::msg::VelodynePacket *pkt,
                           const double time_offset) = 0;
-    virtual void setPacketRate( const double packet_rate ) = 0; // necessary for automatic adjustment of rpm
 
   protected:
     rclcpp::Node * node_ptr_;
@@ -83,7 +82,6 @@ namespace velodyne_driver
                           const double time_offset);
 
     void setDeviceIP( const std::string& ip );
-    void setPacketRate( const double packet_rate ) ; // necessary for automatic adjustment of rpm
 
   private:
     int sockfd_;
@@ -101,7 +99,6 @@ namespace velodyne_driver
   public:
     InputPCAP(rclcpp::Node * node_ptr,
               uint16_t port = DATA_PORT_NUMBER,
-              double packet_rate = 0.0,
               std::string filename="",
               bool read_once=false,
               bool read_fast=false,
@@ -111,9 +108,9 @@ namespace velodyne_driver
     virtual int getPacket(velodyne_msgs::msg::VelodynePacket *pkt,
                           const double time_offset);
     void setDeviceIP( const std::string& ip );
-    void setPacketRate( const double packet_rate ); // necessary for automatic adjustment of rpm
   private:
-    rclcpp::Rate packet_rate_;
+    rclcpp::Time last_packet_receive_time_;
+    rclcpp::Time last_packet_stamp_;
     std::string filename_;
     pcap_t *pcap_;
     bpf_program pcap_packet_filter_;

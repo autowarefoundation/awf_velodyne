@@ -113,12 +113,6 @@ namespace velodyne_driver
     (void) close(sockfd_);
   }
 
-  void InputSocket::setPacketRate ( const double packet_rate)
-  {
-    (void)packet_rate;
-    return;
-  }
-
   /** @brief Get one velodyne packet. */
   int InputSocket::getPacket(velodyne_msgs::msg::VelodynePacket *pkt, const double time_offset)
   {
@@ -237,14 +231,14 @@ namespace velodyne_driver
    *
    *  @param private_nh ROS private handle for calling node.
    *  @param port UDP port number
-   *  @param packet_rate expected device packet frequency (Hz)
    *  @param filename PCAP dump file name
    */
   InputPCAP::InputPCAP(rclcpp::Node * node_ptr, uint16_t port,
-                       double packet_rate, std::string filename,
-                       bool read_once, bool read_fast, double repeat_delay):
-    Input(node_ptr, port),
-    packet_rate_(packet_rate),
+                       std::string filename, bool read_once,
+                       bool read_fast, double repeat_delay):
+    Input(private_nh, port),
+    last_packet_receive_time_(0),
+    last_packet_stamp_(0),
     filename_(filename)
   {
     (void)read_once;
@@ -291,14 +285,6 @@ namespace velodyne_driver
     pcap_close(pcap_);
   }
 
-  void InputPCAP::setPacketRate(const double packet_rate)
-  {
-    // Only update if changed
-    if (abs(1.0 / packet_rate_.period().count()*1e-9 - packet_rate) > 0.1)
-    {
-       //packet_rate_ = rclcpp::Rate(packet_rate);
-    }
-  }
   /** @brief Get one velodyne packet. */
   int InputPCAP::getPacket(velodyne_msgs::msg::VelodynePacket *pkt, const double time_offset)
   {
@@ -321,16 +307,29 @@ namespace velodyne_driver
               continue;
             }
 
+            memcpy(&pkt->data[0], pkt_data+42, packet_size);
+            pkt->stamp = rosTimeFromGpsTimestamp(&(pkt->data[1200])); // time_offset not considered here, as no synchronization required
+            empty_ = false;
+
             // Keep the reader from blowing through the file.
             if (read_fast_ == false)
             {
-              packet_rate_.sleep();
+              if (last_packet_receive_time_ != ros::Time(0) && last_packet_stamp_ != ros::Time(0))
+              {
+                ros::Duration packet_interval = pkt->stamp - last_packet_stamp_;
+                ros::Duration time_elapsed = ros::Time::now() - last_packet_receive_time_;                
+                ros::Duration sleep_time = packet_interval - time_elapsed;               
+                if (packet_interval > time_elapsed)
+                {
+                  ros::Time now1 = ros::Time::now();
+                  sleep_time.sleep();
+                  ros::Time now2 = ros::Time::now();
+                  //ROS_WARN("Sleep rate: %f, Actual sleep: %f", sleep_time.toSec(), (now2 - now1).toSec());
+                }
+              }              
+              last_packet_receive_time_ = ros::Time::now();
+              last_packet_stamp_ = pkt->stamp;
             }
-
-            memcpy(&pkt->data[0], pkt_data+42, packet_size);
-            auto ros_time_now = node_ptr_->now();
-            pkt->stamp = rosTimeFromGpsTimestamp(ros_time_now, &(pkt->data[1200])); // time_offset not considered here, as no synchronization required
-            empty_ = false;
             return 0;                   // success
           }
 
