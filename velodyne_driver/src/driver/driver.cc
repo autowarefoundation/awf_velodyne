@@ -169,7 +169,7 @@ VelodyneDriverCore::VelodyneDriverCore(rclcpp::Node * node_ptr)
 
   // get model name, validate string, determine packet rate
   config_.model = node_ptr_->declare_parameter("model", std::string("64E"));
-  double packet_rate;                   // packet frequency (Hz)
+  [[maybe_unused]]double packet_rate;                   // packet frequency (Hz)
   std::string model_full_name;
   if ((config_.model == "64E_S2") ||
       (config_.model == "64E_S2.1"))    // generates 1333312 points per second
@@ -257,8 +257,7 @@ VelodyneDriverCore::VelodyneDriverCore(rclcpp::Node * node_ptr)
   if (dump_file != "")                  // have PCAP file?
     {
       // read data from packet capture file
-      input_.reset(new velodyne_driver::InputPCAP(node_ptr_, udp_port,
-                                                  packet_rate, dump_file));
+      input_.reset(new velodyne_driver::InputPCAP(node_ptr_, udp_port, dump_file));
     }
   else
     {

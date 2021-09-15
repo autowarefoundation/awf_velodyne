@@ -229,14 +229,14 @@ namespace velodyne_driver
 
   /** @brief constructor
    *
-   *  @param private_nh ROS private handle for calling node.
+   *  @param node_ptr ROS node_ptr for calling node.
    *  @param port UDP port number
    *  @param filename PCAP dump file name
    */
   InputPCAP::InputPCAP(rclcpp::Node * node_ptr, uint16_t port,
                        std::string filename, bool read_once,
                        bool read_fast, double repeat_delay):
-    Input(private_nh, port),
+    Input(node_ptr, port),
     last_packet_receive_time_(0),
     last_packet_stamp_(0),
     filename_(filename)
@@ -308,18 +308,19 @@ namespace velodyne_driver
             }
 
             memcpy(&pkt->data[0], pkt_data+42, packet_size);
-            pkt->stamp = rosTimeFromGpsTimestamp(&(pkt->data[1200])); // time_offset not considered here, as no synchronization required
+            rclcpp::Time t=rclcpp::Clock{RCL_ROS_TIME}.now();
+            pkt->stamp = rosTimeFromGpsTimestamp(t,&(pkt->data[1200])); // time_offset not considered here, as no synchronization required
             empty_ = false;
 
             // Keep the reader from blowing through the file.
             if (read_fast_ == false)
             {
-              if (last_packet_stamp_ != ros::Time(0.0) && last_packet_receive_time_ != ros::Time(0.0))
+              if (last_packet_stamp_ != rclcpp::Time(0.0) && last_packet_receive_time_ != rclcpp::Time(0.0))
               {
-                ros::Time current_packet_stamp = pkt->stamp;
-                ros::Duration expected_cycle_time = current_packet_stamp - last_packet_stamp_;
-                ros::Time expected_end = last_packet_receive_time_ + expected_cycle_time;
-                ros::Time actual_end = ros::Time::now();
+                rclcpp::Time current_packet_stamp = pkt->stamp;
+                rclcpp::Duration expected_cycle_time = current_packet_stamp - last_packet_stamp_;
+                rclcpp::Time expected_end = last_packet_receive_time_ + expected_cycle_time;
+                rclcpp::Time actual_end = rclcpp::Clock{RCL_ROS_TIME}.now();
 
                 // D.etect backward jumps in time
                 if (actual_end < last_packet_receive_time_)
@@ -328,14 +329,15 @@ namespace velodyne_driver
                 }
 
                 // Calculate the time we'll sleep for.
-                ros::Duration sleep_time = expected_end - actual_end;
+                rclcpp::Duration sleep_time = expected_end - actual_end;
+
 
                 // Make sure to reset our start time.
                 last_packet_receive_time_ = expected_end;
                 last_packet_stamp_ = current_packet_stamp;
                 
                 // If we've taken too much time we won't sleep.
-                if(sleep_time <= ros::Duration(0.0))
+                if(sleep_time <= rclcpp::Duration::from_seconds(0.0))
                 {
                   // If we've jumped forward in time, or the loop has taken more than a full extra
                   // cycle, reset our cycle.
@@ -346,13 +348,14 @@ namespace velodyne_driver
                 }
                 else
                 {
-                  sleep_time.sleep();
+                 int count=static_cast<int>(sleep_time.seconds()*1e6);
+                  rclcpp::sleep_for(std::chrono::microseconds(count));
                 }
               }
               else
               {
                 last_packet_stamp_ = pkt->stamp;
-                last_packet_receive_time_ = ros::Time::now();
+                last_packet_receive_time_ = rclcpp::Clock{RCL_ROS_TIME}.now();
               }              
             }
             return 0;                   // success
