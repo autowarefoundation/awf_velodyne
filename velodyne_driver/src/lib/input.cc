@@ -307,9 +307,9 @@ namespace velodyne_driver
               continue;
             }
 
-            memcpy(&pkt->data[0], pkt_data+42, packet_size);
+            memcpy(&pkt->data[0], pkt_data+BLOCK_LENGTH, packet_size);
             rclcpp::Time t=rclcpp::Clock{RCL_ROS_TIME}.now();
-            pkt->stamp = rosTimeFromGpsTimestamp(t,&(pkt->data[1200])); // time_offset not considered here, as no synchronization required
+            pkt->stamp = rosTimeFromGpsTimestamp(t,&(pkt->data[TIMESTAMP_BYTE])); // time_offset not considered here, as no synchronization required
             empty_ = false;
 
             // Keep the reader from blowing through the file.
@@ -322,7 +322,7 @@ namespace velodyne_driver
                 rclcpp::Time expected_end = last_packet_receive_time_ + expected_cycle_time;
                 rclcpp::Time actual_end = rclcpp::Clock{RCL_ROS_TIME}.now();
 
-                // D.etect backward jumps in time
+                // Detect backward jumps in time
                 if (actual_end < last_packet_receive_time_)
                 {
                   expected_end = actual_end + expected_cycle_time;
