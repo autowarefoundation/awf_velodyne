@@ -41,7 +41,7 @@ struct PointXYZIRADT
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 } EIGEN_ALIGN16;
 
-};  // namespace velodyne_pointcloud
+}  // namespace velodyne_pointcloud
 
 POINT_CLOUD_REGISTER_POINT_STRUCT(
   velodyne_pointcloud::PointXYZIR,
