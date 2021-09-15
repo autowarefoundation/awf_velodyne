@@ -42,10 +42,10 @@
 
 namespace velodyne_driver
 {
-  static uint16_t DATA_PORT_NUMBER = 2368;     // default data port
-  [[maybe_unused]]static uint16_t POSITION_PORT_NUMBER = 8308; // default position port
-  [[maybe_unused]]static uint16_t TIMESTAMP_BYTE = 1200;       // timestamp byte position in data packet
-  [[maybe_unused]]static uint16_t BLOCK_LENGTH = 42;           // length of each data block in bytes
+  static constexpr uint16_t DATA_PORT_NUMBER = 2368;     // default data port
+  static constexpr uint16_t POSITION_PORT_NUMBER = 8308; // default position port
+  static constexpr uint16_t TIMESTAMP_BYTE = 1200;       // timestamp byte position in data packet
+  static constexpr uint16_t BLOCK_LENGTH = 42;           // length of each data block in bytes
 
   /** @brief Velodyne input base class */
   class Input
