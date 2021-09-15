@@ -237,8 +237,8 @@ namespace velodyne_driver
                        std::string filename, bool read_once,
                        bool read_fast, double repeat_delay):
     Input(node_ptr, port),
-    last_packet_receive_time_(0),
-    last_packet_stamp_(0),
+    last_packet_receive_time_(rclcpp::Time(0.0)),
+    last_packet_stamp_(rclcpp::Time(0.0)),
     filename_(filename)
   {
     (void)read_once;
