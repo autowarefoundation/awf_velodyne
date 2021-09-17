@@ -237,8 +237,8 @@ namespace velodyne_driver
                        std::string filename, bool read_once,
                        bool read_fast, double repeat_delay):
     Input(node_ptr, port),
-    last_packet_receive_time_(rclcpp::Time(0.0)),
-    last_packet_stamp_(rclcpp::Time(0.0)),
+    last_packet_receive_time_(rclcpp::Time(0.0, RCL_ROS_TIME)),
+    last_packet_stamp_(rclcpp::Time(0.0, RCL_ROS_TIME)),
     filename_(filename)
   {
     (void)read_once;
@@ -315,7 +315,7 @@ namespace velodyne_driver
             // Keep the reader from blowing through the file.
             if (read_fast_ == false)
             {
-              if (last_packet_stamp_ != rclcpp::Time(0.0) && last_packet_receive_time_ != rclcpp::Time(0.0))
+              if (last_packet_stamp_ != rclcpp::Time(0.0, RCL_ROS_TIME) && last_packet_receive_time_ != rclcpp::Time(0.0, RCL_ROS_TIME))
               {
                 rclcpp::Time current_packet_stamp = pkt->stamp;
                 rclcpp::Duration expected_cycle_time = current_packet_stamp - last_packet_stamp_;
@@ -348,8 +348,8 @@ namespace velodyne_driver
                 }
                 else
                 {
-                 int count=static_cast<int>(sleep_time.seconds()*1e6);
-                  rclcpp::sleep_for(std::chrono::microseconds(count));
+                  uint64_t count = sleep_time.nanoseconds();
+                  rclcpp::sleep_for(std::chrono::nanoseconds(count));
                 }
               }
               else
