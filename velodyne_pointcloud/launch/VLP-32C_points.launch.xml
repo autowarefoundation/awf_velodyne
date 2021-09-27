@@ -52,11 +52,4 @@
     <arg name="scan_phase" value="$(var scan_phase)"/>
   </include>
 
-  <!-- start laserscan nodelet -->
-  <!-- <include file="$(find-pkg-share velodyne_pointcloud)/launch/laserscan_nodelet.launch.xml">
-    <arg name="manager" value="$(var manager)" />
-    <arg name="ring" value="$(var laserscan_ring)"/>
-    <arg name="resolution" value="$(var laserscan_resolution)"/>
-  </include> -->
-
 </launch>
