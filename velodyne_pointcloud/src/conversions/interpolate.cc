@@ -29,22 +29,27 @@ Interpolate::Interpolate(const rclcpp::NodeOptions & options)
     this->create_publisher<sensor_msgs::msg::PointCloud2>("velodyne_points_interpolate_ex", rclcpp::SensorDataQoS());
 
   // subscribe
-  twist_sub_ = this->create_subscription<geometry_msgs::msg::TwistStamped>(
-    "/vehicle/status/twist", 10, std::bind(&Interpolate::processTwist, this, std::placeholders::_1));
+  velocity_report_sub_ = this->create_subscription<autoware_auto_vehicle_msgs::msg::VelocityReport>(
+    "/vehicle/status/velocity_status", 10,
+    std::bind(&Interpolate::processVelocityReport, this, std::placeholders::_1));
   velodyne_points_ex_sub_ = this->create_subscription<sensor_msgs::msg::PointCloud2>(
     "velodyne_points_ex", rclcpp::SensorDataQoS(), std::bind(&Interpolate::processPoints,this, std::placeholders::_1));
 }
 
-void Interpolate::processTwist(const geometry_msgs::msg::TwistStamped::SharedPtr twist_msg)
+void Interpolate::processVelocityReport(const autoware_auto_vehicle_msgs::msg::VelocityReport::SharedPtr velocity_report_msg)
 {
-  twist_queue_.push_back(*twist_msg);
+  velocity_report_queue_.push_back(*velocity_report_msg);
 
-  while (!twist_queue_.empty()) {
+  while (!velocity_report_queue_.empty()) {
     //for replay rosbag
-    if (rclcpp::Time(twist_queue_.front().header.stamp) > rclcpp::Time(twist_msg->header.stamp)) {
-      twist_queue_.pop_front();
-    } else if (rclcpp::Time(twist_queue_.front().header.stamp) < rclcpp::Time(twist_msg->header.stamp) - rclcpp::Duration::from_seconds(1.0)) {
-      twist_queue_.pop_front();
+    if (
+      rclcpp::Time(velocity_report_queue_.front().header.stamp) >
+      rclcpp::Time(velocity_report_msg->header.stamp)) {
+      velocity_report_queue_.pop_front();
+    } else if (
+      rclcpp::Time(velocity_report_queue_.front().header.stamp) <
+      rclcpp::Time(velocity_report_msg->header.stamp) - rclcpp::Duration::from_seconds(1.0)) {
+      velocity_report_queue_.pop_front();
     } else {
       break;
     }
@@ -68,7 +73,7 @@ void Interpolate::processPoints(
     new pcl::PointCloud<velodyne_pointcloud::PointXYZIRADT>);
   tf2::Transform tf2_base_link_to_sensor;
   getTransform(points_xyziradt->header.frame_id, base_link_frame_, &tf2_base_link_to_sensor);
-  interpolate_points_xyziradt = interpolate(points_xyziradt, twist_queue_, tf2_base_link_to_sensor);
+  interpolate_points_xyziradt = interpolate(points_xyziradt, velocity_report_queue_, tf2_base_link_to_sensor);
 
   if (velodyne_points_interpolate_pub_->get_subscription_count() > 0) {
     const auto interpolate_points_xyzir = convert(interpolate_points_xyziradt);

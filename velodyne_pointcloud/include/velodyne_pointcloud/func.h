@@ -19,7 +19,7 @@
 
 #include <pcl/point_cloud.h>
 
-#include <geometry_msgs/msg/twist_stamped.hpp>
+#include <autoware_auto_vehicle_msgs/msg/velocity_report.hpp>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 #include <velodyne_pointcloud/point_types.h>
@@ -44,7 +44,7 @@ pcl::PointCloud<velodyne_pointcloud::PointXYZIRADT>::Ptr extractInvalidNearPoint
 
 pcl::PointCloud<velodyne_pointcloud::PointXYZIRADT>::Ptr interpolate(
   const pcl::PointCloud<velodyne_pointcloud::PointXYZIRADT>::ConstPtr & input_pointcloud,
-  const std::deque<geometry_msgs::msg::TwistStamped> & twist_queue,
+  const std::deque<autoware_auto_vehicle_msgs::msg::VelocityReport> & velocity_report_queue,
   const tf2::Transform & tf2_base_link_to_sensor);
 
 pcl::PointCloud<velodyne_pointcloud::PointXYZIRADT>::Ptr sortRingNumber(

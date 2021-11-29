@@ -23,6 +23,7 @@
 
   <depend>angles</depend>
   <depend>diagnostic_updater</depend>
+  <depend>autoware_auto_vehicle_msgs</depend>
   <depend>geometry_msgs</depend>
   <depend>libpcl-all-dev</depend>
   <depend>message_filters</depend>
