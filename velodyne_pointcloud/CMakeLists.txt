@@ -81,7 +81,7 @@ ament_auto_add_library(transform_nodelet SHARED
 target_link_libraries(transform_nodelet ${YAML_CPP_LIBRARIES})
 
 rclcpp_components_register_node(transform_nodelet
-  PLUGIN "velodyne_pointcloud::Interpolate"
+  PLUGIN "velodyne_pointcloud::Transform"
   EXECUTABLE transform_node
 )
 # add_subdirectory(src/conversions)
