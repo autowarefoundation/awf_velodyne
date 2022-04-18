@@ -13,14 +13,11 @@
 
 */
 
-#include <velodyne_pointcloud/convert.h>
-
 #include <pcl_conversions/pcl_conversions.h>
-#include <velodyne_pointcloud/pointcloudXYZIRADT.h>
-
-#include <yaml-cpp/yaml.h>
-
+#include <velodyne_pointcloud/convert.h>
 #include <velodyne_pointcloud/func.h>
+#include <velodyne_pointcloud/pointcloudXYZIRADT.h>
+#include <yaml-cpp/yaml.h>
 
 namespace velodyne_pointcloud
 {
@@ -42,7 +39,7 @@ bool get_param(const std::vector<rclcpp::Parameter> & p, const std::string & nam
 inline std::chrono::nanoseconds toChronoNanoSeconds(const double seconds)
 {
   return std::chrono::duration_cast<std::chrono::nanoseconds>(
-          std::chrono::duration<double>(seconds));
+    std::chrono::duration<double>(seconds));
 }
 
 /** @brief Constructor. */
@@ -54,7 +51,9 @@ Convert::Convert(const rclcpp::NodeOptions & options)
 {
   data_ = std::make_shared<velodyne_rawdata::RawData>(this);
 
-  RCLCPP_INFO(this->get_logger(), "This node is only tested for VLP16, VLP32C, and VLS128. Use other models at your own risk.");
+  RCLCPP_INFO(
+    this->get_logger(),
+    "This node is only tested for VLP16, VLP32C, and VLS128. Use other models at your own risk.");
 
   // get path to angles.config file for this device
   std::string calibration_file = this->declare_parameter("calibration", "");
@@ -107,7 +106,8 @@ Convert::Convert(const rclcpp::NodeOptions & options)
   num_points_threshold_range.from_value = 1;
   num_points_threshold_range.to_value = 10000;
   num_points_threshold_desc.integer_range.push_back(num_points_threshold_range);
-  num_points_threshold_ = this->declare_parameter("num_points_threshold", 300, num_points_threshold_desc);
+  num_points_threshold_ =
+    this->declare_parameter("num_points_threshold", 300, num_points_threshold_desc);
 
   rcl_interfaces::msg::ParameterDescriptor scan_phase_desc;
   scan_phase_desc.name = "scan_phase";
@@ -134,34 +134,35 @@ Convert::Convert(const rclcpp::NodeOptions & options)
   }
 
   // advertise
-  velodyne_points_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("velodyne_points", rclcpp::SensorDataQoS());
-  velodyne_points_ex_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("velodyne_points_ex", rclcpp::SensorDataQoS());
-  velodyne_points_invalid_near_pub_ =
-    this->create_publisher<sensor_msgs::msg::PointCloud2>("velodyne_points_invalid_near", rclcpp::SensorDataQoS());
-  velodyne_points_combined_ex_pub_ =
-    this->create_publisher<sensor_msgs::msg::PointCloud2>("velodyne_points_combined_ex", rclcpp::SensorDataQoS());
-  marker_array_pub_ = this->create_publisher<visualization_msgs::msg::MarkerArray>("velodyne_model_marker", 1);
+  velodyne_points_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>(
+    "velodyne_points", rclcpp::SensorDataQoS());
+  velodyne_points_ex_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>(
+    "velodyne_points_ex", rclcpp::SensorDataQoS());
+  velodyne_points_invalid_near_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>(
+    "velodyne_points_invalid_near", rclcpp::SensorDataQoS());
+  velodyne_points_combined_ex_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>(
+    "velodyne_points_combined_ex", rclcpp::SensorDataQoS());
+  marker_array_pub_ =
+    this->create_publisher<visualization_msgs::msg::MarkerArray>("velodyne_model_marker", 1);
   using std::placeholders::_1;
-  set_param_res_ = this->add_on_set_parameters_callback(
-    std::bind(&Convert::paramCallback, this, _1));
-
+  set_param_res_ =
+    this->add_on_set_parameters_callback(std::bind(&Convert::paramCallback, this, _1));
 
   // subscribe to VelodyneScan packets
-  velodyne_scan_ =
-    this->create_subscription<velodyne_msgs::msg::VelodyneScan>(
+  velodyne_scan_ = this->create_subscription<velodyne_msgs::msg::VelodyneScan>(
     "velodyne_packets", rclcpp::SensorDataQoS(),
     std::bind(&Convert::processScan, this, std::placeholders::_1));
 }
 
-rcl_interfaces::msg::SetParametersResult Convert::paramCallback(const std::vector<rclcpp::Parameter> & p)
+rcl_interfaces::msg::SetParametersResult Convert::paramCallback(
+  const std::vector<rclcpp::Parameter> & p)
 {
   RCLCPP_INFO(this->get_logger(), "Reconfigure Request");
 
-  if(get_param(p, "min_range", config_.min_range) ||
-     get_param(p, "max_range", config_.max_range) ||
-     get_param(p, "view_direction", config_.view_direction) ||
-     get_param(p, "view_width", config_.view_width))
-  {
+  if (
+    get_param(p, "min_range", config_.min_range) || get_param(p, "max_range", config_.max_range) ||
+    get_param(p, "view_direction", config_.view_direction) ||
+    get_param(p, "view_width", config_.view_width)) {
     data_->setParameters(
       config_.min_range, config_.max_range, config_.view_direction, config_.view_width);
   }
@@ -184,11 +185,11 @@ rcl_interfaces::msg::SetParametersResult Convert::paramCallback(const std::vecto
 
   // if(get_param(p, "invalid_intensity", invalid_intensity))
   // {
-    // YAML::Node invalid_intensity_yaml = YAML::Load(invalid_intensity);
-    // invalid_intensity_array_ = std::vector<float>(data_->getNumLasers(), 0);
-    // for (size_t i = 0; i < invalid_intensity_yaml.size(); ++i) {
-    //   invalid_intensity_array_.at(i) = invalid_intensity_yaml[i].as<float>();
-    // }
+  // YAML::Node invalid_intensity_yaml = YAML::Load(invalid_intensity);
+  // invalid_intensity_array_ = std::vector<float>(data_->getNumLasers(), 0);
+  // for (size_t i = 0; i < invalid_intensity_yaml.size(); ++i) {
+  //   invalid_intensity_array_.at(i) = invalid_intensity_yaml[i].as<float>();
+  // }
   // }
   rcl_interfaces::msg::SetParametersResult result;
   result.successful = true;
@@ -206,11 +207,12 @@ void Convert::processScan(const velodyne_msgs::msg::VelodyneScan::SharedPtr scan
     velodyne_points_ex_pub_->get_subscription_count() > 0 ||
     velodyne_points_invalid_near_pub_->get_subscription_count() > 0 ||
     velodyne_points_combined_ex_pub_->get_subscription_count() > 0) {
-    scan_points_xyziradt.pc->points.reserve(scanMsg->packets.size() * data_->scansPerPacket() + _overflow_buffer.pc->points.size());
+    scan_points_xyziradt.pc->points.reserve(
+      scanMsg->packets.size() * data_->scansPerPacket() + _overflow_buffer.pc->points.size());
 
     // Add the overflow buffer points
     for (size_t i = _overflow_buffer.pc->points.size(); i > 0; --i) {
-      scan_points_xyziradt.pc->points.push_back(_overflow_buffer.pc->points[i-1]);
+      scan_points_xyziradt.pc->points.push_back(_overflow_buffer.pc->points[i - 1]);
     }
     // Reset overflow buffer
     _overflow_buffer.pc->points.clear();
@@ -221,13 +223,11 @@ void Convert::processScan(const velodyne_msgs::msg::VelodyneScan::SharedPtr scan
       data_->unpack(scanMsg->packets[i], scan_points_xyziradt);
     }
     // Remove overflow points and add to overflow buffer for next scan
-    int phase = (uint16_t)round(config_.scan_phase*100);
-    if (scan_points_xyziradt.pc->points.size() > 0)
-    {
+    int phase = (uint16_t)round(config_.scan_phase * 100);
+    if (scan_points_xyziradt.pc->points.size() > 0) {
       uint16_t current_azimuth = (int)scan_points_xyziradt.pc->points.back().azimuth;
       uint16_t phase_diff = (36000 + current_azimuth - phase) % 36000;
-      while (phase_diff < 18000 && scan_points_xyziradt.pc->points.size() > 0)
-      {
+      while (phase_diff < 18000 && scan_points_xyziradt.pc->points.size() > 0) {
         _overflow_buffer.pc->points.push_back(scan_points_xyziradt.pc->points.back());
         scan_points_xyziradt.pc->points.pop_back();
         current_azimuth = (int)scan_points_xyziradt.pc->points.back().azimuth;
@@ -244,7 +244,7 @@ void Convert::processScan(const velodyne_msgs::msg::VelodyneScan::SharedPtr scan
     // double average_timestamp = (first_point_timestamp + last_point_timestamp)/2;
     scan_points_xyziradt.pc->header.stamp =
       pcl_conversions::toPCL(rclcpp::Time(toChronoNanoSeconds(first_point_timestamp).count()));
-      //pcl_conversions::toPCL(scanMsg->packets[0].stamp - ros::Duration(0.0));
+    // pcl_conversions::toPCL(scanMsg->packets[0].stamp - ros::Duration(0.0));
     scan_points_xyziradt.pc->height = 1;
     scan_points_xyziradt.pc->width = scan_points_xyziradt.pc->points.size();
   }
@@ -328,7 +328,8 @@ visualization_msgs::msg::MarkerArray Convert::createVelodyneModelMakerMsg(
   auto generateQuaternion = [](double roll, double pitch, double yaw) {
     tf2::Quaternion tf_quat;
     tf_quat.setRPY(roll, pitch, yaw);
-    return tf2::toMsg(tf_quat);;
+    return tf2::toMsg(tf_quat);
+    ;
   };
 
   auto generateVector3 = [](double x, double y, double z) {
@@ -348,7 +349,7 @@ visualization_msgs::msg::MarkerArray Convert::createVelodyneModelMakerMsg(
     return color;
   };
 
-  //array[0]:bottom body, array[1]:middle body(laser window), array[2]: top body, array[3]:cable
+  // array[0]:bottom body, array[1]:middle body(laser window), array[2]: top body, array[3]:cable
   const double radius = 0.1033;
   const std::array<geometry_msgs::msg::Point, 4> pos = {
     generatePoint(0.0, 0.0, -0.0285), generatePoint(0.0, 0.0, 0.0), generatePoint(0.0, 0.0, 0.0255),
@@ -398,7 +399,8 @@ visualization_msgs::msg::MarkerArray Convert::createVelodyneModelMakerMsg(
 //     tf2::convert(transform_msg.transform, *tf2_transform_ptr);
 //   } catch (tf2::TransformException & ex) {
 //     RCLCPP_WARN(this->get_logger(), "%s", ex.what());
-//     RCLCPP_ERROR(this->get_logger(), "Please publish TF %s to %s", target_frame.c_str(), source_frame.c_str());
+//     RCLCPP_ERROR(this->get_logger(), "Please publish TF %s to %s", target_frame.c_str(),
+//     source_frame.c_str());
 
 //     tf2_transform_ptr->setOrigin(tf2::Vector3(0, 0, 0));
 //     tf2_transform_ptr->setRotation(tf2::Quaternion(0, 0, 0, 1));

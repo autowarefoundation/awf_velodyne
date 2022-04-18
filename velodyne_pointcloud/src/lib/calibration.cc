@@ -12,6 +12,7 @@
  */
 
 #include <yaml-cpp/yaml.h>
+
 #include <cmath>
 #include <fstream>
 #include <iostream>
@@ -32,6 +33,7 @@ void operator>>(const YAML::Node & node, T & i)
 #endif  // HAVE_NEW_YAMLCPP
 
 #include <rclcpp/rclcpp.hpp>
+
 #include <velodyne_pointcloud/calibration.h>
 
 namespace velodyne_pointcloud
@@ -174,7 +176,9 @@ void operator>>(const YAML::Node & node, Calibration & calibration)
       calibration.laser_corrections[next_index].laser_ring = ring;
       next_angle = min_seen;
       if (calibration.ros_info) {
-        RCLCPP_INFO(rclcpp::get_logger("calibration"), "laser_ring[%2u] = %2u, angle = %+.6f", next_index, ring, next_angle);
+        RCLCPP_INFO(
+          rclcpp::get_logger("calibration"), "laser_ring[%2u] = %2u, angle = %+.6f", next_index,
+          ring, next_angle);
       }
     }
   }

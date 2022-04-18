@@ -14,26 +14,25 @@
 
 */
 
-#ifndef _VELODYNE_POINTCLOUD_CONVERT_H_
-#define _VELODYNE_POINTCLOUD_CONVERT_H_ 1
-
-#include <deque>
-#include <string>
+#ifndef VELODYNE_POINTCLOUD__CONVERT_H_
+#define VELODYNE_POINTCLOUD__CONVERT_H_
 
 #include <rclcpp/rclcpp.hpp>
+
+#include <sensor_msgs/msg/point_cloud2.hpp>
+#include <velodyne_msgs/msg/velodyne_scan.hpp>
+#include <visualization_msgs/msg/marker_array.hpp>
 
 #include <tf2/convert.h>
 #include <tf2/transform_datatypes.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-#include <tf2_ros/transform_listener.h>
 #include <tf2_ros/buffer.h>
-
-#include <sensor_msgs/msg/point_cloud2.hpp>
-#include <visualization_msgs/msg/marker_array.hpp>
-#include <velodyne_msgs/msg/velodyne_scan.hpp>
-
+#include <tf2_ros/transform_listener.h>
 #include <velodyne_pointcloud/pointcloudXYZIRADT.h>
 #include <velodyne_pointcloud/rawdata.h>
+
+#include <deque>
+#include <string>
 
 namespace velodyne_pointcloud
 {
@@ -44,11 +43,11 @@ public:
   ~Convert() {}
 
 private:
-
   /** \brief Parameter service callback */
   rcl_interfaces::msg::SetParametersResult paramCallback(const std::vector<rclcpp::Parameter> & p);
   void processScan(const velodyne_msgs::msg::VelodyneScan::SharedPtr scanMsg);
-  visualization_msgs::msg::MarkerArray createVelodyneModelMakerMsg(const std_msgs::msg::Header & header);
+  visualization_msgs::msg::MarkerArray createVelodyneModelMakerMsg(
+    const std_msgs::msg::Header & header);
   bool getTransform(
     const std::string & target_frame, const std::string & source_frame,
     tf2::Transform * tf2_transform_ptr);
@@ -81,13 +80,13 @@ private:
     double max_range;
     double view_direction;
     double view_width;
-    int npackets;               ///< number of packets to combine
-    double scan_phase;        ///< sensor phase (degrees)
-    bool sensor_timestamp;      ///< flag on whether to use sensor (GPS) time or ROS receive time
+    int npackets;           ///< number of packets to combine
+    double scan_phase;      ///< sensor phase (degrees)
+    bool sensor_timestamp;  ///< flag on whether to use sensor (GPS) time or ROS receive time
   } Config;
   Config config_;
 };
 
 }  // namespace velodyne_pointcloud
 
-#endif  // _VELODYNE_POINTCLOUD_CONVERT_H_
+#endif  // VELODYNE_POINTCLOUD__CONVERT_H_

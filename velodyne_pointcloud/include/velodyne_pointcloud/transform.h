@@ -15,16 +15,17 @@
 
 */
 
-#ifndef _VELODYNE_POINTCLOUD_TRANSFORM_H_
-#define _VELODYNE_POINTCLOUD_TRANSFORM_H_ 1
+#ifndef VELODYNE_POINTCLOUD__TRANSFORM_H_
+#define VELODYNE_POINTCLOUD__TRANSFORM_H_
 
 #include <rclcpp/rclcpp.hpp>
+
 #include <sensor_msgs/msg/point_cloud2.hpp>
 #include <velodyne_msgs/msg/velodyne_scan.hpp>
+
 #include <message_filters/subscriber.h>
 #include <tf2_ros/message_filter.h>
 #include <tf2_ros/transform_listener.h>
-
 #include <velodyne_pointcloud/pointcloudXYZIR.h>
 #include <velodyne_pointcloud/rawdata.h>
 
@@ -78,4 +79,4 @@ private:
 
 }  // namespace velodyne_pointcloud
 
-#endif  // _VELODYNE_POINTCLOUD_TRANSFORM_H_
+#endif  // VELODYNE_POINTCLOUD__TRANSFORM_H_

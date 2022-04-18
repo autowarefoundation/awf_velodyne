@@ -9,8 +9,8 @@
  * $ Id: 02/14/2012 11:25:34 AM piyushk $
  */
 
-#ifndef __VELODYNE_CALIBRATION_H
-#define __VELODYNE_CALIBRATION_H
+#ifndef VELODYNE_POINTCLOUD__CALIBRATION_H_
+#define VELODYNE_POINTCLOUD__CALIBRATION_H_
 
 #include <map>
 #include <string>
@@ -79,4 +79,4 @@ public:
 
 }  // namespace velodyne_pointcloud
 
-#endif /* end of include guard: __VELODYNE_CALIBRATION_H */
+#endif  // VELODYNE_POINTCLOUD__CALIBRATION_H_

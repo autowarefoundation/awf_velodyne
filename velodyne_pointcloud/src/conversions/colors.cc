@@ -15,6 +15,7 @@
 */
 
 #include "velodyne_pointcloud/colors.h"
+
 #include <velodyne_pointcloud/point_types.h>
 
 /// @todo make sure these includes are really necessary

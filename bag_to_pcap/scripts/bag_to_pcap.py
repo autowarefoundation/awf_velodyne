@@ -1,10 +1,11 @@
 #!/usr/bin/env python
-import sys
-import rospy
-from velodyne_msgs.msg import VelodyneScan
-
-import signal
 import binascii
+import signal
+import sys
+
+import rospy
+
+from velodyne_msgs.msg import VelodyneScan
 
 #Global header for pcap 2.4
 global_header =  'd4c3b2a10200040000000000000000000000010001000000'         # 24 bytes = 48 characters.

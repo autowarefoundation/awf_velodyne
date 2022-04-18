@@ -33,25 +33,25 @@
  *  @author Jack O'Quin
  */
 
-#ifndef __VELODYNE_RAWDATA_H
-#define __VELODYNE_RAWDATA_H
+#ifndef VELODYNE_POINTCLOUD__RAWDATA_H_
+#define VELODYNE_POINTCLOUD__RAWDATA_H_
+
+#include <rclcpp/rclcpp.hpp>
+
+#include <velodyne_msgs/msg/velodyne_packet.hpp>
+
+#include <boost/format.hpp>
 
 #include <errno.h>
 #include <math.h>
-#include <stdint.h>
-#include <boost/format.hpp>
-#include <string>
-#include <vector>
-
 #include <pcl/point_cloud.h>
-
-#include <rclcpp/rclcpp.hpp>
-#include <velodyne_msgs/msg/velodyne_packet.hpp>
-
+#include <stdint.h>
 #include <velodyne_pointcloud/calibration.h>
+#include <velodyne_pointcloud/datacontainerbase.h>
 #include <velodyne_pointcloud/point_types.h>
 
-#include <velodyne_pointcloud/datacontainerbase.h>
+#include <string>
+#include <vector>
 
 namespace velodyne_rawdata
 {
@@ -87,7 +87,7 @@ static const float VLP16_DSR_TOFFSET = 2.304f;        // [µs]
 static const float VLP16_FIRING_TOFFSET = 55.296f;    // [µs]
 
 /** Special Definitions for VLS128 support **/
-static const float VLP128_DISTANCE_RESOLUTION   =    0.004f;  // [m]
+static const float VLP128_DISTANCE_RESOLUTION = 0.004f;  // [m]
 
 /** Special Definitions for VLS128 support **/
 // These are used to detect which bank of 32 lasers is in this block
@@ -96,8 +96,10 @@ static const uint16_t VLS128_BANK_2 = 0xddff;
 static const uint16_t VLS128_BANK_3 = 0xccff;
 static const uint16_t VLS128_BANK_4 = 0xbbff;
 
-static const float  VLS128_CHANNEL_TDURATION  =  2.665f;  // [µs] Channels corresponds to one laser firing
-static const float  VLS128_SEQ_TDURATION      =  53.3f;   // [µs] Sequence is a set of laser firings including recharging
+static const float VLS128_CHANNEL_TDURATION =
+  2.665f;  // [µs] Channels corresponds to one laser firing
+static const float VLS128_SEQ_TDURATION =
+  53.3f;  // [µs] Sequence is a set of laser firings including recharging
 
 /** \brief Raw Velodyne data block.
  *
@@ -148,8 +150,7 @@ typedef struct raw_packet
 } raw_packet_t;
 
 /** \brief Velodyne echo types */
-enum RETURN_TYPE
-{
+enum RETURN_TYPE {
   INVALID = 0,
   SINGLE_STRONGEST = 1,
   SINGLE_LAST = 2,
@@ -233,7 +234,7 @@ private:
   void unpack_vlp16(const velodyne_msgs::msg::VelodynePacket & pkt, DataContainerBase & data);
 
   /** add private function to handle the VLS128 **/
-  void unpack_vls128(const velodyne_msgs::msg::VelodynePacket &pkt, DataContainerBase &data);
+  void unpack_vls128(const velodyne_msgs::msg::VelodynePacket & pkt, DataContainerBase & data);
 
   /** in-line test whether a point is in range */
   bool pointInRange(float range)
@@ -244,4 +245,4 @@ private:
 
 }  // namespace velodyne_rawdata
 
-#endif  // __VELODYNE_RAWDATA_H
+#endif  // VELODYNE_POINTCLOUD__RAWDATA_H_

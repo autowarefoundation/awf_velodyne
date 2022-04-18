@@ -8,24 +8,23 @@
  *  $Id$
  */
 
-#ifndef _VELODYNE_POINTCLOUD_INTERPOLATE_H_
-#define _VELODYNE_POINTCLOUD_INTERPOLATE_H_ 1
-
-#include <deque>
-#include <string>
+#ifndef VELODYNE_POINTCLOUD__INTERPOLATE_H_
+#define VELODYNE_POINTCLOUD__INTERPOLATE_H_
 
 #include <rclcpp/rclcpp.hpp>
-
-#include <tf2/convert.h>
-#include <tf2/transform_datatypes.h>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-#include <tf2_ros/transform_listener.h>
 
 #include <autoware_auto_vehicle_msgs/msg/velocity_report.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
 #include <visualization_msgs/msg/marker_array.hpp>
 
+#include <tf2/convert.h>
+#include <tf2/transform_datatypes.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <tf2_ros/transform_listener.h>
 #include <velodyne_pointcloud/pointcloudXYZIRADT.h>
+
+#include <deque>
+#include <string>
 
 namespace velodyne_pointcloud
 {
@@ -39,15 +38,16 @@ private:
   /** \brief Parameter service callback */
   rcl_interfaces::msg::SetParametersResult paramCallback(const std::vector<rclcpp::Parameter> & p);
 
-  void processPoints(
-    const sensor_msgs::msg::PointCloud2::SharedPtr points_xyziradt);
-  void processVelocityReport(const autoware_auto_vehicle_msgs::msg::VelocityReport::SharedPtr velocity_report_msg);
+  void processPoints(const sensor_msgs::msg::PointCloud2::SharedPtr points_xyziradt);
+  void processVelocityReport(
+    const autoware_auto_vehicle_msgs::msg::VelocityReport::SharedPtr velocity_report_msg);
   bool getTransform(
     const std::string & target_frame, const std::string & source_frame,
     tf2::Transform * tf2_transform_ptr);
 
   rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr velodyne_points_ex_sub_;
-  rclcpp::Subscription<autoware_auto_vehicle_msgs::msg::VelocityReport>::SharedPtr velocity_report_sub_;
+  rclcpp::Subscription<autoware_auto_vehicle_msgs::msg::VelocityReport>::SharedPtr
+    velocity_report_sub_;
   rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr velodyne_points_interpolate_pub_;
   rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr velodyne_points_interpolate_ex_pub_;
 
@@ -61,4 +61,4 @@ private:
 
 }  // namespace velodyne_pointcloud
 
-#endif  // _VELODYNE_POINTCLOUD_INTERPOLATE_H_
+#endif  // VELODYNE_POINTCLOUD__INTERPOLATE_H_

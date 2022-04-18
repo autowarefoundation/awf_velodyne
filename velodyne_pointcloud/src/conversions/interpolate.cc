@@ -7,41 +7,41 @@
  *  $Id$
  */
 
-#include <velodyne_pointcloud/interpolate.h>
-
 #include <pcl_conversions/pcl_conversions.h>
-#include <velodyne_pointcloud/pointcloudXYZIRADT.h>
-
 #include <velodyne_pointcloud/func.h>
+#include <velodyne_pointcloud/interpolate.h>
+#include <velodyne_pointcloud/pointcloudXYZIRADT.h>
 
 namespace velodyne_pointcloud
 {
 /** @brief Constructor. */
 Interpolate::Interpolate(const rclcpp::NodeOptions & options)
 : Node("velodyne_interpolate_node", options),
- tf2_listener_(tf2_buffer_),
- base_link_frame_("base_link")
+  tf2_listener_(tf2_buffer_),
+  base_link_frame_("base_link")
 {
   // advertise
-  velodyne_points_interpolate_pub_ =
-    this->create_publisher<sensor_msgs::msg::PointCloud2>("velodyne_points_interpolate", rclcpp::SensorDataQoS());
-  velodyne_points_interpolate_ex_pub_ =
-    this->create_publisher<sensor_msgs::msg::PointCloud2>("velodyne_points_interpolate_ex", rclcpp::SensorDataQoS());
+  velodyne_points_interpolate_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>(
+    "velodyne_points_interpolate", rclcpp::SensorDataQoS());
+  velodyne_points_interpolate_ex_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>(
+    "velodyne_points_interpolate_ex", rclcpp::SensorDataQoS());
 
   // subscribe
   velocity_report_sub_ = this->create_subscription<autoware_auto_vehicle_msgs::msg::VelocityReport>(
     "/vehicle/status/velocity_status", 10,
     std::bind(&Interpolate::processVelocityReport, this, std::placeholders::_1));
   velodyne_points_ex_sub_ = this->create_subscription<sensor_msgs::msg::PointCloud2>(
-    "velodyne_points_ex", rclcpp::SensorDataQoS(), std::bind(&Interpolate::processPoints,this, std::placeholders::_1));
+    "velodyne_points_ex", rclcpp::SensorDataQoS(),
+    std::bind(&Interpolate::processPoints, this, std::placeholders::_1));
 }
 
-void Interpolate::processVelocityReport(const autoware_auto_vehicle_msgs::msg::VelocityReport::SharedPtr velocity_report_msg)
+void Interpolate::processVelocityReport(
+  const autoware_auto_vehicle_msgs::msg::VelocityReport::SharedPtr velocity_report_msg)
 {
   velocity_report_queue_.push_back(*velocity_report_msg);
 
   while (!velocity_report_queue_.empty()) {
-    //for replay rosbag
+    // for replay rosbag
     if (
       rclcpp::Time(velocity_report_queue_.front().header.stamp) >
       rclcpp::Time(velocity_report_msg->header.stamp)) {
@@ -56,8 +56,7 @@ void Interpolate::processVelocityReport(const autoware_auto_vehicle_msgs::msg::V
   }
 }
 
-void Interpolate::processPoints(
-  const sensor_msgs::msg::PointCloud2::SharedPtr points_xyziradt_msg)
+void Interpolate::processPoints(const sensor_msgs::msg::PointCloud2::SharedPtr points_xyziradt_msg)
 {
   if (
     velodyne_points_interpolate_pub_->get_subscription_count() <= 0 &&
@@ -73,7 +72,8 @@ void Interpolate::processPoints(
     new pcl::PointCloud<velodyne_pointcloud::PointXYZIRADT>);
   tf2::Transform tf2_base_link_to_sensor;
   getTransform(points_xyziradt->header.frame_id, base_link_frame_, &tf2_base_link_to_sensor);
-  interpolate_points_xyziradt = interpolate(points_xyziradt, velocity_report_queue_, tf2_base_link_to_sensor);
+  interpolate_points_xyziradt =
+    interpolate(points_xyziradt, velocity_report_queue_, tf2_base_link_to_sensor);
 
   if (velodyne_points_interpolate_pub_->get_subscription_count() > 0) {
     const auto interpolate_points_xyzir = convert(interpolate_points_xyziradt);
@@ -104,7 +104,8 @@ bool Interpolate::getTransform(
     tf2::convert(transform_msg.transform, *tf2_transform_ptr);
   } catch (tf2::TransformException & ex) {
     RCLCPP_WARN(this->get_logger(), "%s", ex.what());
-    RCLCPP_ERROR(this->get_logger(), "Please publish TF %s to %s", target_frame.c_str(), source_frame.c_str());
+    RCLCPP_ERROR(
+      this->get_logger(), "Please publish TF %s to %s", target_frame.c_str(), source_frame.c_str());
 
     tf2_transform_ptr->setOrigin(tf2::Vector3(0, 0, 0));
     tf2_transform_ptr->setRotation(tf2::Quaternion(0, 0, 0, 1));

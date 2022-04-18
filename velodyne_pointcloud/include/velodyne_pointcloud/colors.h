@@ -15,12 +15,13 @@
     @author Jack O'Quin
 */
 
-#ifndef _VELODYNE_POINTCLOUD_COLORS_H_
-#define _VELODYNE_POINTCLOUD_COLORS_H_
+#ifndef VELODYNE_POINTCLOUD__COLORS_H_
+#define VELODYNE_POINTCLOUD__COLORS_H_
 
-#include <pcl/point_types.h>
-#include <pcl/point_cloud.h>
 #include <rclcpp/rclcpp.hpp>
+
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
 #include <velodyne_pointcloud/point_types.h>
 
 namespace velodyne_pointcloud
@@ -44,4 +45,4 @@ private:
 
 }  // namespace velodyne_pointcloud
 
-#endif  // _VELODYNE_POINTCLOUD_COLORS_H_
+#endif  // VELODYNE_POINTCLOUD__COLORS_H_

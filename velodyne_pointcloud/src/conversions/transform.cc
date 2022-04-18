@@ -96,34 +96,33 @@ Transform::Transform(const rclcpp::NodeOptions & options)
     config_.min_range, config_.max_range, config_.view_direction, config_.view_width);
 
   // advertise output point cloud (before subscribing to input data)
-  output_ =
-    this->create_publisher<sensor_msgs::msg::PointCloud2>("velodyne_points", rclcpp::SensorDataQoS());
+  output_ = this->create_publisher<sensor_msgs::msg::PointCloud2>(
+    "velodyne_points", rclcpp::SensorDataQoS());
 
   using std::placeholders::_1;
-  set_param_res_ = this->add_on_set_parameters_callback(
-    std::bind(&Transform::paramCallback, this, _1));
+  set_param_res_ =
+    this->add_on_set_parameters_callback(std::bind(&Transform::paramCallback, this, _1));
 
   // subscribe to VelodyneScan packets using transform filter
   tf_filter_ = std::make_shared<tf2_ros::MessageFilter<velodyne_msgs::msg::VelodyneScan>>(
-    velodyne_scan_, tf_buffer_, config_.frame_id, 10,
-    this->get_node_logging_interface(), this->get_node_clock_interface());
+    velodyne_scan_, tf_buffer_, config_.frame_id, 10, this->get_node_logging_interface(),
+    this->get_node_clock_interface());
   tf_filter_->registerCallback(std::bind(&Transform::processScan, this, _1));
 }
 
-rcl_interfaces::msg::SetParametersResult Transform::paramCallback(const std::vector<rclcpp::Parameter> & p)
+rcl_interfaces::msg::SetParametersResult Transform::paramCallback(
+  const std::vector<rclcpp::Parameter> & p)
 {
   RCLCPP_INFO_STREAM(this->get_logger(), "Reconfigure request.");
 
-  if(get_param(p, "min_range", config_.min_range) ||
-     get_param(p, "max_range", config_.max_range) ||
-     get_param(p, "view_direction", config_.view_direction) ||
-     get_param(p, "view_width", config_.view_width))
-  {
+  if (
+    get_param(p, "min_range", config_.min_range) || get_param(p, "max_range", config_.max_range) ||
+    get_param(p, "view_direction", config_.view_direction) ||
+    get_param(p, "view_width", config_.view_width)) {
     data_->setParameters(
       config_.min_range, config_.max_range, config_.view_direction, config_.view_width);
   }
-  if(get_param(p, "frame_id", config_.frame_id))
-  {
+  if (get_param(p, "frame_id", config_.frame_id)) {
     RCLCPP_INFO_STREAM(this->get_logger(), "Target frame ID: " << config_.frame_id);
   }
   rcl_interfaces::msg::SetParametersResult result;
@@ -134,14 +133,15 @@ rcl_interfaces::msg::SetParametersResult Transform::paramCallback(const std::vec
 }
 
 /** @brief Callback for raw scan messages.
-   *
-   *  @pre TF message filter has already waited until the transform to
-   *       the configured @c frame_id can succeed.
-   */
+ *
+ *  @pre TF message filter has already waited until the transform to
+ *       the configured @c frame_id can succeed.
+ */
 void Transform::processScan(const velodyne_msgs::msg::VelodyneScan::ConstSharedPtr & scanMsg)
 {
-  if (output_->get_subscription_count() == 0 &&
-    output_->get_intra_process_subscription_count() == 0)    // no one listening?
+  if (
+    output_->get_subscription_count() == 0 &&
+    output_->get_intra_process_subscription_count() == 0)  // no one listening?
   {
     return;
   }
@@ -176,7 +176,8 @@ void Transform::processScan(const velodyne_msgs::msg::VelodyneScan::ConstSharedP
 
     // transform the packet point cloud into the target frame
     try {
-      RCLCPP_DEBUG_STREAM(this->get_logger(), 
+      RCLCPP_DEBUG_STREAM(
+        this->get_logger(),
         "transforming from " << inPc_.pc->header.frame_id << " to " << config_.frame_id);
       pcl_ros::transformPointCloud(config_.frame_id, *(inPc_.pc), tfPc_, tf_buffer_);
 #if 0  // use the latest transform available, should usually work fine
@@ -197,9 +198,9 @@ void Transform::processScan(const velodyne_msgs::msg::VelodyneScan::ConstSharedP
   }
 
   // publish the accumulated cloud message
-  RCLCPP_DEBUG_STREAM(this->get_logger(), 
-    "Publishing " << outMsg->height * outMsg->width
-                  << " Velodyne points, time: " << outMsg->header.stamp);
+  RCLCPP_DEBUG_STREAM(
+    this->get_logger(), "Publishing " << outMsg->height * outMsg->width
+                                      << " Velodyne points, time: " << outMsg->header.stamp);
   sensor_msgs::msg::PointCloud2 ros_pc_msg;
   pcl::toROSMsg(*outMsg, ros_pc_msg);
   output_->publish(ros_pc_msg);

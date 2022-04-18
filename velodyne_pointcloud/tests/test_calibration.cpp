@@ -35,7 +35,6 @@
 //
 
 #include <gtest/gtest.h>
-
 #include <ros/package.h>
 #include <velodyne_pointcloud/calibration.h>
 using namespace velodyne_pointcloud;

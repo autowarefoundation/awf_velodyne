@@ -20,7 +20,7 @@
     <param name="hz" value="10.0" />
     <param name="hzerror" value="3.0" />
     <param name="test_duration" value="5.0" />
-    <param name="topic" value="velodyne_points" />  
+    <param name="topic" value="velodyne_points" />
     <param name="wait_time" value="2.0" />
   </test>
 

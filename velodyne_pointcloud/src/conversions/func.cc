@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
+#include <opencv2/opencv.hpp>
+
 #include <velodyne_pointcloud/func.h>
 
 #include <algorithm>
 #include <iterator>
-
-#include <opencv2/opencv.hpp>
 
 namespace velodyne_pointcloud
 {
@@ -84,16 +84,16 @@ pcl::PointCloud<velodyne_pointcloud::PointXYZIRADT>::Ptr extractInvalidNearPoint
   const size_t points_size_threshold)
 {
   std::vector<uint16_t> ring_id_array;
-  //NOTE support only VLP16 and VLP32C
+  // NOTE support only VLP16 and VLP32C
   if (num_lasers == 16) {
     ring_id_array = {2, 4, 6, 8, 10, 12, 14, 0, 3, 5, 7, 9, 11, 13, 15, 1};
   } else if (num_lasers == 32) {
     ring_id_array = {30, 1,  2, 5, 6, 9, 10, 14, 13, 17, 18, 22, 21, 25, 26, 0,
                      29, 31, 4, 8, 3, 7, 12, 16, 11, 15, 20, 19, 24, 23, 27, 28};
-  }
-  else {
+  } else {
     // RCLCPP_WARN_STREAM_THROTTLE(10, "support only VLP16 and VLP32C");
-    pcl::PointCloud<velodyne_pointcloud::PointXYZIRADT>::Ptr output_pointcloud(new pcl::PointCloud<velodyne_pointcloud::PointXYZIRADT>);
+    pcl::PointCloud<velodyne_pointcloud::PointXYZIRADT>::Ptr output_pointcloud(
+      new pcl::PointCloud<velodyne_pointcloud::PointXYZIRADT>);
     output_pointcloud->header = input_pointcloud->header;
     output_pointcloud->height = 1;
     output_pointcloud->width = 0;
@@ -170,7 +170,9 @@ pcl::PointCloud<velodyne_pointcloud::PointXYZIRADT>::Ptr interpolate(
 
   if (input_pointcloud->points.empty() || velocity_report_queue.empty()) {
     auto ros_clock = rclcpp::Clock(RCL_ROS_TIME);
-    RCLCPP_WARN_STREAM_THROTTLE(rclcpp::get_logger("velodyne_interpolate"), ros_clock, 10000 /* ms */, "input_pointcloud->points or velocity_report_queue is empty.");
+    RCLCPP_WARN_STREAM_THROTTLE(
+      rclcpp::get_logger("velodyne_interpolate"), ros_clock, 10000 /* ms */,
+      "input_pointcloud->points or velocity_report_queue is empty.");
     *output_pointcloud = *input_pointcloud;
     return output_pointcloud;
   }
@@ -185,7 +187,9 @@ pcl::PointCloud<velodyne_pointcloud::PointXYZIRADT>::Ptr interpolate(
     [](const autoware_auto_vehicle_msgs::msg::VelocityReport & x, rclcpp::Time t) {
       return rclcpp::Time(x.header.stamp) < t;
     });
-  velocity_report_it = velocity_report_it == std::end(velocity_report_queue) ? std::end(velocity_report_queue) - 1 : velocity_report_it;
+  velocity_report_it = velocity_report_it == std::end(velocity_report_queue)
+                         ? std::end(velocity_report_queue) - 1
+                         : velocity_report_it;
 
   const tf2::Transform tf2_base_link_to_sensor_inv = tf2_base_link_to_sensor.inverse();
   for (const auto & p : input_pointcloud->points) {
@@ -193,7 +197,8 @@ pcl::PointCloud<velodyne_pointcloud::PointXYZIRADT>::Ptr interpolate(
          (velocity_report_it != std::end(velocity_report_queue) - 1 &&
           p.time_stamp > rclcpp::Time(velocity_report_it->header.stamp).seconds());
          ++velocity_report_it) {
-      // std::cout << std::fixed << p.time_stamp << " " << rclcpp::Time(velocity_report_it->stamp).seconds() << std::endl;
+      // std::cout << std::fixed << p.time_stamp << " " <<
+      // rclcpp::Time(velocity_report_it->stamp).seconds() << std::endl;
     }
 
     float v = velocity_report_it->longitudinal_velocity;
@@ -201,7 +206,9 @@ pcl::PointCloud<velodyne_pointcloud::PointXYZIRADT>::Ptr interpolate(
 
     if (std::fabs(p.time_stamp - rclcpp::Time(velocity_report_it->header.stamp).seconds()) > 0.1) {
       auto ros_clock = rclcpp::Clock(RCL_ROS_TIME);
-      RCLCPP_WARN_STREAM_THROTTLE(rclcpp::get_logger("velodyne_interpolate"), ros_clock, 10000 /* ms */, "velocity_report time_stamp is too late. Cloud not interpolate.");
+      RCLCPP_WARN_STREAM_THROTTLE(
+        rclcpp::get_logger("velodyne_interpolate"), ros_clock, 10000 /* ms */,
+        "velocity_report time_stamp is too late. Cloud not interpolate.");
       v = 0;
       w = 0;
     }

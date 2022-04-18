@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef __DATACONTAINERBASE_H
-#define __DATACONTAINERBASE_H
+#ifndef VELODYNE_POINTCLOUD__DATACONTAINERBASE_H_
+#define VELODYNE_POINTCLOUD__DATACONTAINERBASE_H_
 
 #include <rclcpp/rclcpp.hpp>
 
@@ -25,10 +25,9 @@ class DataContainerBase
 {
 public:
   virtual void addPoint(
-    const float & x, const float & y, const float & z,
-    const uint8_t & return_type, const uint16_t & ring,
-    const uint16_t & azimuth, const float & distance, const float & intensity,
-    const double & time_stamp) = 0;
+    const float & x, const float & y, const float & z, const uint8_t & return_type,
+    const uint16_t & ring, const uint16_t & azimuth, const float & distance,
+    const float & intensity, const double & time_stamp) = 0;
 };
 }  // namespace velodyne_rawdata
-#endif  //__DATACONTAINERBASE_H
+#endif  // VELODYNE_POINTCLOUD__DATACONTAINERBASE_H_

@@ -1,14 +1,16 @@
 #include "VelodyneLaserScan.h"
+
 #include <sensor_msgs/point_cloud2_iterator.h>
 
-namespace velodyne_laserscan {
-  
-VelodyneLaserScan::VelodyneLaserScan(ros::NodeHandle &nh, ros::NodeHandle &nh_priv) :
-    ring_count_(0), nh_(nh), srv_(nh_priv)
+namespace velodyne_laserscan
+{
+
+VelodyneLaserScan::VelodyneLaserScan(ros::NodeHandle & nh, ros::NodeHandle & nh_priv)
+: ring_count_(0), nh_(nh), srv_(nh_priv)
 {
   ros::SubscriberStatusCallback connect_cb = boost::bind(&VelodyneLaserScan::connectCb, this);
   pub_ = nh.advertise<sensor_msgs::LaserScan>("scan", 10, connect_cb, connect_cb);
-  
+
   srv_.setCallback(boost::bind(&VelodyneLaserScan::reconfig, this, _1, _2));
 }
 
@@ -22,7 +24,7 @@ void VelodyneLaserScan::connectCb()
   }
 }
 
-void VelodyneLaserScan::recvCallback(const sensor_msgs::PointCloud2ConstPtr& msg)
+void VelodyneLaserScan::recvCallback(const sensor_msgs::PointCloud2ConstPtr & msg)
 {
   // Latch ring count
   if (!ring_count_) {
@@ -59,11 +61,11 @@ void VelodyneLaserScan::recvCallback(const sensor_msgs::PointCloud2ConstPtr& msg
   if ((cfg_.ring < 0) || (cfg_.ring >= ring_count_)) {
     // Default to ring closest to being level for each known sensor
     if (ring_count_ > 32) {
-      ring = 57; // HDL-64E
+      ring = 57;  // HDL-64E
     } else if (ring_count_ > 16) {
-      ring = 23; // HDL-32E
+      ring = 23;  // HDL-32E
     } else {
-      ring = 8; // VLP-16
+      ring = 8;  // VLP-16
     }
   } else {
     ring = cfg_.ring;
@@ -107,14 +109,16 @@ void VelodyneLaserScan::recvCallback(const sensor_msgs::PointCloud2ConstPtr& msg
     scan->range_max = 200.0;
     scan->time_increment = 0.0;
     scan->ranges.resize(SIZE, INFINITY);
-    if ((offset_x == 0) && (offset_y == 4) && (offset_z == 8) && (offset_i == 16) && (offset_r == 20)) {
+    if (
+      (offset_x == 0) && (offset_y == 4) && (offset_z == 8) && (offset_i == 16) &&
+      (offset_r == 20)) {
       scan->intensities.resize(SIZE);
       for (sensor_msgs::PointCloud2ConstIterator<float> it(*msg, "x"); it != it.end(); ++it) {
-        const uint16_t r = *((const uint16_t*)(&it[5])); // ring
+        const uint16_t r = *((const uint16_t *)(&it[5]));  // ring
         if (r == ring) {
-          const float x = it[0]; // x
-          const float y = it[1]; // y
-          const float i = it[4]; // intensity
+          const float x = it[0];  // x
+          const float y = it[1];  // y
+          const float i = it[4];  // intensity
           const int bin = (atan2f(y, x) + (float)M_PI) / RESOLUTION;
           if ((bin >= 0) && (bin < (int)SIZE)) {
             scan->ranges[bin] = sqrtf(x * x + y * y);
@@ -123,19 +127,20 @@ void VelodyneLaserScan::recvCallback(const sensor_msgs::PointCloud2ConstPtr& msg
         }
       }
     } else {
-      ROS_WARN_ONCE("VelodyneLaserScan: PointCloud2 fields in unexpected order. Using slower generic method.");
+      ROS_WARN_ONCE(
+        "VelodyneLaserScan: PointCloud2 fields in unexpected order. Using slower generic method.");
       if (offset_i >= 0) {
         scan->intensities.resize(SIZE);
         sensor_msgs::PointCloud2ConstIterator<uint16_t> iter_r(*msg, "ring");
         sensor_msgs::PointCloud2ConstIterator<float> iter_x(*msg, "x");
         sensor_msgs::PointCloud2ConstIterator<float> iter_y(*msg, "y");
         sensor_msgs::PointCloud2ConstIterator<float> iter_i(*msg, "intensity");
-        for ( ; iter_r != iter_r.end(); ++iter_x, ++iter_y, ++iter_r, ++iter_i) {
-          const uint16_t r = *iter_r; // ring
+        for (; iter_r != iter_r.end(); ++iter_x, ++iter_y, ++iter_r, ++iter_i) {
+          const uint16_t r = *iter_r;  // ring
           if (r == ring) {
-            const float x = *iter_x; // x
-            const float y = *iter_y; // y
-            const float i = *iter_i; // intensity
+            const float x = *iter_x;  // x
+            const float y = *iter_y;  // y
+            const float i = *iter_i;  // intensity
             const int bin = (atan2f(y, x) + (float)M_PI) / RESOLUTION;
             if ((bin >= 0) && (bin < (int)SIZE)) {
               scan->ranges[bin] = sqrtf(x * x + y * y);
@@ -147,11 +152,11 @@ void VelodyneLaserScan::recvCallback(const sensor_msgs::PointCloud2ConstPtr& msg
         sensor_msgs::PointCloud2ConstIterator<uint16_t> iter_r(*msg, "ring");
         sensor_msgs::PointCloud2ConstIterator<float> iter_x(*msg, "x");
         sensor_msgs::PointCloud2ConstIterator<float> iter_y(*msg, "y");
-        for ( ; iter_r != iter_r.end(); ++iter_x, ++iter_y, ++iter_r) {
-          const uint16_t r = *iter_r; // ring
+        for (; iter_r != iter_r.end(); ++iter_x, ++iter_y, ++iter_r) {
+          const uint16_t r = *iter_r;  // ring
           if (r == ring) {
-            const float x = *iter_x; // x
-            const float y = *iter_y; // y
+            const float x = *iter_x;  // x
+            const float y = *iter_y;  // y
             const int bin = (atan2f(y, x) + (float)M_PI) / RESOLUTION;
             if ((bin >= 0) && (bin < (int)SIZE)) {
               scan->ranges[bin] = sqrtf(x * x + y * y);
@@ -166,9 +171,9 @@ void VelodyneLaserScan::recvCallback(const sensor_msgs::PointCloud2ConstPtr& msg
   }
 }
 
-void VelodyneLaserScan::reconfig(VelodyneLaserScanConfig& config, uint32_t level)
+void VelodyneLaserScan::reconfig(VelodyneLaserScanConfig & config, uint32_t level)
 {
   cfg_ = config;
 }
 
-}
+}  // namespace velodyne_laserscan

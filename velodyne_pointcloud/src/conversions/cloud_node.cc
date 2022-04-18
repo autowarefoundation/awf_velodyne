@@ -11,8 +11,9 @@
 
 */
 
-#include <rclcpp/rclcpp.hpp>
 #include "velodyne_pointcloud/convert.h"
+
+#include <rclcpp/rclcpp.hpp>
 
 /** Main node entry point. */
 int main(int argc, char ** argv)

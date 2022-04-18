@@ -1,16 +1,13 @@
 <package format="3">
-
   <name>velodyne_driver</name>
   <version>0.2.0</version>
-  <description>
-    ROS device driver for Velodyne 3D LIDARs.
-  </description>
+  <description>ROS device driver for Velodyne 3D LIDARs.</description>
   <maintainer email="jwhitley@autonomoustuff.com">Josh Whitley</maintainer>
   <maintainer email="brice.rebsamen@gmail.com">Brice Rebsamen</maintainer>
-  <author> Jack O'Quin</author>
+  <author>Jack O'Quin</author>
   <author>Patrick Beeson</author>
   <author>Michael Quinlan</author>
-  <author>Yaxin Liu </author>
+  <author>Yaxin Liu</author>
   <license>BSD</license>
 
   <url type="website">http://www.ros.org/wiki/velodyne_driver</url>
@@ -30,5 +27,4 @@
   <export>
     <build_type>ament_cmake</build_type>
   </export>
-
 </package>

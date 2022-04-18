@@ -1,7 +1,8 @@
-#include <ros/ros.h>
 #include "VelodyneLaserScan.h"
 
-int main(int argc, char** argv)
+#include <ros/ros.h>
+
+int main(int argc, char ** argv)
 {
   ros::init(argc, argv, "velodyne_laserscan_node");
   ros::NodeHandle nh;

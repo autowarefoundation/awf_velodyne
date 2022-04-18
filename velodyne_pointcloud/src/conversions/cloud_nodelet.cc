@@ -12,11 +12,12 @@
 
 */
 
-#include <nodelet/nodelet.h>
-#include <pluginlib/class_list_macros.h>
+#include "velodyne_pointcloud/convert.h"
+
 #include <rclcpp/rclcpp.hpp>
 
-#include "velodyne_pointcloud/convert.h"
+#include <nodelet/nodelet.h>
+#include <pluginlib/class_list_macros.h>
 
 namespace velodyne_pointcloud
 {

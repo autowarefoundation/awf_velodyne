@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-#include <deque>
-#include <vector>
+#include <autoware_auto_vehicle_msgs/msg/velocity_report.hpp>
 
 #include <pcl/point_cloud.h>
-
-#include <autoware_auto_vehicle_msgs/msg/velocity_report.hpp>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-
 #include <velodyne_pointcloud/point_types.h>
+
+#include <deque>
+#include <vector>
 
 namespace velodyne_pointcloud
 {

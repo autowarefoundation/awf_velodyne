@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef __PACKETS_PREPROCESSOR_POINT_TYPES_H
-#define __PACKETS_PREPROCESSOR_POINT_TYPES_H
+#ifndef VELODYNE_POINTCLOUD__POINT_TYPES_H_
+#define VELODYNE_POINTCLOUD__POINT_TYPES_H_
 
 #include <pcl/point_types.h>
 
@@ -50,6 +50,7 @@ POINT_CLOUD_REGISTER_POINT_STRUCT(
 POINT_CLOUD_REGISTER_POINT_STRUCT(
   velodyne_pointcloud::PointXYZIRADT,
   (float, x, x)(float, y, y)(float, z, z)(float, intensity, intensity)(std::uint16_t, ring, ring)(
-    float, azimuth, azimuth)(float, distance, distance)(std::uint8_t, return_type, return_type)(double, time_stamp, time_stamp))
+    float, azimuth, azimuth)(float, distance, distance)(std::uint8_t, return_type, return_type)(
+    double, time_stamp, time_stamp))
 
-#endif
+#endif  // VELODYNE_POINTCLOUD__POINT_TYPES_H_

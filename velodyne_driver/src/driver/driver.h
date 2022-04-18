@@ -13,16 +13,18 @@
  *  ROS driver interface for the Velodyne 3D LIDARs
  */
 
-#ifndef _VELODYNE_DRIVER_H_
-#define _VELODYNE_DRIVER_H_ 1
+#ifndef DRIVER__DRIVER_H_
+#define DRIVER__DRIVER_H_
 
-#include <string>
-#include <rclcpp/rclcpp.hpp>
 #include <diagnostic_updater/diagnostic_updater.hpp>
 #include <diagnostic_updater/publisher.hpp>
+#include <rclcpp/rclcpp.hpp>
+
 #include <velodyne_msgs/msg/velodyne_scan.hpp>
 
 #include <velodyne_driver/input.h>
+
+#include <string>
 
 namespace velodyne_driver
 {
@@ -30,31 +32,29 @@ namespace velodyne_driver
 class VelodyneDriverCore
 {
 public:
-
   VelodyneDriverCore(rclcpp::Node * node_ptr);
   ~VelodyneDriverCore() {}
 
   bool poll(void);
 
 private:
-
   // opinter to node for loggers and clocks
   rclcpp::Node * node_ptr_;
 
-  ///Callback for parameter service
+  /// Callback for parameter service
   rcl_interfaces::msg::SetParametersResult paramCallback(const std::vector<rclcpp::Parameter> & p);
 
-  ///Pointer to parameter update service
+  /// Pointer to parameter update service
   rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr set_param_res_;
 
   // configuration parameters
   struct
   {
-    std::string frame_id;            ///< tf frame ID
-    std::string model;               ///< device model name
-    double rpm;                      ///< device rotation rate (RPMs)
-    double scan_phase;               ///< scan phase (degrees)
-    double time_offset;              ///< time in seconds added to each velodyne time stamp
+    std::string frame_id;  ///< tf frame ID
+    std::string model;     ///< device model name
+    double rpm;            ///< device rotation rate (RPMs)
+    double scan_phase;     ///< scan phase (degrees)
+    double time_offset;    ///< time in seconds added to each velodyne time stamp
   } config_;
 
   std::shared_ptr<Input> input_;
@@ -66,12 +66,12 @@ private:
   double diag_max_freq_;
   std::shared_ptr<diagnostic_updater::TopicDiagnostic> diag_topic_;
 
-  // uint8_t  curr_packet_rmode; //    [strongest return or farthest mode => Singular Retruns per firing]
-                              // or [Both  => Dual Retruns per fire]
+  // uint8_t  curr_packet_rmode; //    [strongest return or farthest mode => Singular Retruns per
+  // firing] or [Both  => Dual Retruns per fire]
   // uint8_t  curr_packet_sensor_model; // extract the sensor id from packet
-  std::string dump_file; // string to hold pcap file name
+  std::string dump_file;  // string to hold pcap file name
 };
 
-} // namespace velodyne_driver
+}  // namespace velodyne_driver
 
-#endif // _VELODYNE_DRIVER_H_
+#endif  // DRIVER__DRIVER_H_

@@ -1,25 +1,29 @@
-#include <ros/ros.h>
-#include <pluginlib/class_list_macros.h>
-#include <nodelet/nodelet.h>
 #include "VelodyneLaserScan.h"
+
+#include <nodelet/nodelet.h>
+#include <pluginlib/class_list_macros.h>
+#include <ros/ros.h>
 
 namespace velodyne_laserscan
 {
 
-class LaserScanNodelet: public nodelet::Nodelet
+class LaserScanNodelet : public nodelet::Nodelet
 {
 public:
   LaserScanNodelet() {}
   ~LaserScanNodelet() {}
 
 private:
-  virtual void onInit() {
+  virtual void onInit()
+  {
     node_.reset(new VelodyneLaserScan(getNodeHandle(), getPrivateNodeHandle()));
   }
   boost::shared_ptr<VelodyneLaserScan> node_;
 };
 
-}
+}  // namespace velodyne_laserscan
 
-// PLUGINLIB_DECLARE_CLASS(velodyne_laserscan, LaserScanNodelet, velodyne_laserscan::LaserScanNodelet, nodelet::Nodelet);
-PLUGINLIB_EXPORT_CLASS(/*velodyne_laserscan, LaserScanNodelet,*/ velodyne_laserscan::LaserScanNodelet, nodelet::Nodelet);
+// PLUGINLIB_DECLARE_CLASS(velodyne_laserscan, LaserScanNodelet,
+// velodyne_laserscan::LaserScanNodelet, nodelet::Nodelet);
+PLUGINLIB_EXPORT_CLASS(
+  /*velodyne_laserscan, LaserScanNodelet,*/ velodyne_laserscan::LaserScanNodelet, nodelet::Nodelet);
