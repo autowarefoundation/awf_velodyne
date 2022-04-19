@@ -230,8 +230,11 @@ void Convert::processScan(const velodyne_msgs::msg::VelodyneScan::SharedPtr scan
       {
         _overflow_buffer.pc->points.push_back(scan_points_xyziradt.pc->points.back());
         scan_points_xyziradt.pc->points.pop_back();
-        current_azimuth = (int)scan_points_xyziradt.pc->points.back().azimuth;
-        phase_diff = (36000 + current_azimuth - phase) % 36000;
+        if (scan_points_xyziradt.pc->points.size() > 0)
+        {
+          current_azimuth = (int)scan_points_xyziradt.pc->points.back().azimuth;
+          phase_diff = (36000 + current_azimuth - phase) % 36000;
+        }
       }
       _overflow_buffer.pc->width = _overflow_buffer.pc->points.size();
     }
