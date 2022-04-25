@@ -20,7 +20,12 @@
 #include <pcl/point_cloud.h>
 
 #include <autoware_auto_vehicle_msgs/msg/velocity_report.hpp>
+
+#ifdef USE_TF2_GEOMETRY_MSGS_DEPRECATED_HEADER
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#else
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+#endif
 
 #include <velodyne_pointcloud/point_types.h>
 

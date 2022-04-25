@@ -57,6 +57,14 @@ ament_auto_add_library(cloud_nodelet SHARED
   src/conversions/func.cc
 )
 target_link_libraries(cloud_nodelet velodyne_rawdata ${YAML_CPP_LIBRARIES} ${OpenCV_LIBS})
+
+# workaround to allow deprecated header to build on both galactic and rolling
+if(${tf2_geometry_msgs_VERSION} VERSION_LESS 0.18.0)
+  target_compile_definitions(cloud_nodelet PRIVATE
+    USE_TF2_GEOMETRY_MSGS_DEPRECATED_HEADER
+  )
+endif()
+
 rclcpp_components_register_node(cloud_nodelet
   PLUGIN "velodyne_pointcloud::Convert"
   EXECUTABLE cloud_node
@@ -68,6 +76,13 @@ ament_auto_add_library(interpolate_nodelet SHARED
   src/conversions/pointcloudXYZIRADT.cc
   src/conversions/func.cc)
 target_link_libraries(interpolate_nodelet ${OpenCV_LIBS})
+
+# workaround to allow deprecated header to build on both galactic and rolling
+if(${tf2_geometry_msgs_VERSION} VERSION_LESS 0.18.0)
+  target_compile_definitions(interpolate_nodelet PRIVATE
+    USE_TF2_GEOMETRY_MSGS_DEPRECATED_HEADER
+  )
+endif()
 
 rclcpp_components_register_node(interpolate_nodelet
   PLUGIN "velodyne_pointcloud::Interpolate"
