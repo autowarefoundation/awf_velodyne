@@ -151,26 +151,26 @@ namespace velodyne_driver
             if(!rclcpp::ok())
             {
               RCLCPP_ERROR(node_ptr_->get_logger(), "poll() error: shutdown requested");
-              return 1;
+              return -1;
             }
             int retval = poll(fds, 1, POLL_TIMEOUT);
             if (retval < 0)             // poll() error?
               {
                 if (errno != EINTR)
                   RCLCPP_ERROR(node_ptr_->get_logger(), "poll() error: %s", strerror(errno));
-                return 1;
+                return -1;
               }
             if (retval == 0)            // poll() timeout?
               {
                 RCLCPP_WARN(node_ptr_->get_logger(), "Velodyne poll() timeout");
-                return 1;
+                return 0;
               }
             if ((fds[0].revents & POLLERR)
                 || (fds[0].revents & POLLHUP)
                 || (fds[0].revents & POLLNVAL)) // device error?
               {
                 RCLCPP_ERROR(node_ptr_->get_logger(), "poll() reports Velodyne error");
-                return 1;
+                return -1;
               }
           } while ((fds[0].revents & POLLIN) == 0);
 
@@ -187,7 +187,7 @@ namespace velodyne_driver
               {
                 perror("recvfail");
                 RCLCPP_INFO(node_ptr_->get_logger(), "recvfail");
-                return 1;
+                return -1;
               }
           }
         else if ((size_t) nbytes == packet_size)
@@ -220,7 +220,7 @@ namespace velodyne_driver
       }
 
 
-    return 0;
+    return 1;
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -358,7 +358,7 @@ namespace velodyne_driver
                 last_packet_receive_time_ = rclcpp::Clock{RCL_ROS_TIME}.now();
               }              
             }
-            return 0;                   // success
+            return 1;                   // success
           }
 
         if (empty_)                 // no data in file?

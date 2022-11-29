@@ -291,8 +291,9 @@ bool VelodyneDriverCore::poll(void)
         velodyne_msgs::msg::VelodynePacket new_packet;
         scan->packets.push_back(new_packet);
         int rc = input_->getPacket(&scan->packets.back(), config_.time_offset);
-        if (rc == 0) break;       // got a full packet?
+        if (rc == 1) break;       // got a full packet?
         if (rc < 0) return false; // end of file reached?
+	if (rc == 0) continue; // timeout?
     }
     processed_packets++;
 
