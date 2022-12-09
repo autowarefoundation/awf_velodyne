@@ -582,7 +582,8 @@ namespace velodyne_rawdata
     const raw_packet_t * raw = (const raw_packet_t *) &pkt.data[0];
     float last_azimuth_diff = 0;
     uint16_t azimuth_next;
-    const uint8_t return_mode = pkt.data[1204];
+    // const uint8_t return_mode = pkt.data[1204];
+    const uint8_t return_mode = RETURN_MODE_STRONGEST;
     const bool dual_return = (return_mode == RETURN_MODE_DUAL);
 
     for (uint block = 0; block < static_cast < uint > (BLOCKS_PER_PACKET - (4 * dual_return));
