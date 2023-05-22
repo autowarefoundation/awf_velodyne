@@ -22,9 +22,7 @@
 
 
   <depend>angles</depend>
-  <depend>diagnostic_updater</depend>
   <depend>autoware_auto_vehicle_msgs</depend>
-  <depend>geometry_msgs</depend>
   <depend>libpcl-all-dev</depend>
   <depend>message_filters</depend>
   <depend>pcl_ros</depend>
@@ -38,8 +36,6 @@
   <depend>visualization_msgs</depend>
   <depend>yaml-cpp</depend>
 
-  <depend>cv_bridge</depend>
-  <depend>image_transport</depend>
 
   <!-- <exec_depend>velodyne_laserscan</exec_depend> -->
 
