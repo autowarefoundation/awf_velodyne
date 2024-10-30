@@ -161,7 +161,7 @@ pcl::PointCloud<velodyne_pointcloud::PointXYZIRADT>::Ptr extractInvalidNearPoint
 
 pcl::PointCloud<velodyne_pointcloud::PointXYZIRADT>::Ptr interpolate(
   const pcl::PointCloud<velodyne_pointcloud::PointXYZIRADT>::ConstPtr & input_pointcloud,
-  const std::deque<autoware_auto_vehicle_msgs::msg::VelocityReport> & velocity_report_queue,
+  const std::deque<autoware_vehicle_msgs::msg::VelocityReport> & velocity_report_queue,
   const tf2::Transform & tf2_base_link_to_sensor)
 {
   pcl::PointCloud<velodyne_pointcloud::PointXYZIRADT>::Ptr output_pointcloud(
@@ -182,7 +182,7 @@ pcl::PointCloud<velodyne_pointcloud::PointXYZIRADT>::Ptr interpolate(
   auto velocity_report_it = std::lower_bound(
     std::begin(velocity_report_queue), std::end(velocity_report_queue),
     rclcpp::Time(input_pointcloud->points.front().time_stamp, RCL_ROS_TIME),
-    [](const autoware_auto_vehicle_msgs::msg::VelocityReport & x, rclcpp::Time t) {
+    [](const autoware_vehicle_msgs::msg::VelocityReport & x, rclcpp::Time t) {
       return rclcpp::Time(x.header.stamp) < t;
     });
   velocity_report_it = velocity_report_it == std::end(velocity_report_queue) ? std::end(velocity_report_queue) - 1 : velocity_report_it;

@@ -19,7 +19,7 @@
 
 #include <pcl/point_cloud.h>
 
-#include <autoware_auto_vehicle_msgs/msg/velocity_report.hpp>
+#include <autoware_vehicle_msgs/msg/velocity_report.hpp>
 
 #ifdef USE_TF2_GEOMETRY_MSGS_DEPRECATED_HEADER
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
@@ -49,7 +49,7 @@ pcl::PointCloud<velodyne_pointcloud::PointXYZIRADT>::Ptr extractInvalidNearPoint
 
 pcl::PointCloud<velodyne_pointcloud::PointXYZIRADT>::Ptr interpolate(
   const pcl::PointCloud<velodyne_pointcloud::PointXYZIRADT>::ConstPtr & input_pointcloud,
-  const std::deque<autoware_auto_vehicle_msgs::msg::VelocityReport> & velocity_report_queue,
+  const std::deque<autoware_vehicle_msgs::msg::VelocityReport> & velocity_report_queue,
   const tf2::Transform & tf2_base_link_to_sensor);
 
 pcl::PointCloud<velodyne_pointcloud::PointXYZIRADT>::Ptr sortRingNumber(

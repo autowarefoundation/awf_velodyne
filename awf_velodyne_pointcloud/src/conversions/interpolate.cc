@@ -29,14 +29,14 @@ Interpolate::Interpolate(const rclcpp::NodeOptions & options)
     this->create_publisher<sensor_msgs::msg::PointCloud2>("velodyne_points_interpolate_ex", rclcpp::SensorDataQoS());
 
   // subscribe
-  velocity_report_sub_ = this->create_subscription<autoware_auto_vehicle_msgs::msg::VelocityReport>(
+  velocity_report_sub_ = this->create_subscription<autoware_vehicle_msgs::msg::VelocityReport>(
     "/vehicle/status/velocity_status", 10,
     std::bind(&Interpolate::processVelocityReport, this, std::placeholders::_1));
   velodyne_points_ex_sub_ = this->create_subscription<sensor_msgs::msg::PointCloud2>(
     "velodyne_points_ex", rclcpp::SensorDataQoS(), std::bind(&Interpolate::processPoints,this, std::placeholders::_1));
 }
 
-void Interpolate::processVelocityReport(const autoware_auto_vehicle_msgs::msg::VelocityReport::SharedPtr velocity_report_msg)
+void Interpolate::processVelocityReport(const autoware_vehicle_msgs::msg::VelocityReport::SharedPtr velocity_report_msg)
 {
   velocity_report_queue_.push_back(*velocity_report_msg);
 
